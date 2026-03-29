@@ -1,0 +1,87 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Bills Management | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Bills Management</h1>
+        <p class="text-sm text-slate-500">Manage outgoing payments to suppliers and service providers.</p>
+    </div>
+    <div class="flex gap-3">
+        <form method="get" class="relative group">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--ims-accent)] transition-colors"></i>
+            <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Search bills..." 
+                   class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[var(--ims-accent)] w-64 shadow-sm bg-white">
+        </form>
+        <a href="{% url 'bills:ims_bill_add' %}" class="bg-[var(--ims-accent)] text-white px-4 py-2 rounded shadow-sm text-sm font-medium hover:opacity-90 transition flex items-center gap-2">
+            <i class="fas fa-plus"></i>New Bill
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="text-slate-500 bg-slate-50 text-[10px] uppercase tracking-widest font-bold">
+                    <th class="px-6 py-4">Institution Name</th>
+                    <th class="px-6 py-4">Amount</th>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Due Date</th>
+                    <th class="px-6 py-4">Date Created</th>
+                    <th class="px-6 py-4 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for bill in bills %}
+                <tr class="hover:bg-slate-50/50 transition group">
+                    <td class="px-6 py-4">
+                        <p class="font-bold text-slate-700">{{ bill.institution_name }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-black text-slate-800">₦{{ bill.amount|floatformat:2 }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter
+                            {% if bill.status == 'paid' %}bg-emerald-50 text-emerald-600 border border-emerald-100
+                            {% elif bill.status == 'unpaid' %}bg-rose-50 text-rose-600 border border-rose-100
+                            {% else %}bg-amber-50 text-amber-600 border border-amber-100{% endif %}">
+                            {{ bill.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 font-medium text-slate-600">
+                        {{ bill.due_date|date:"M d, Y"|default:"-" }}
+                    </td>
+                    <td class="px-6 py-4 text-slate-500 text-xs">
+                        {{ bill.created_at|date:"M d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'bills:ims_bill_detail' bill.pk %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 hover:border-slate-300 transition mr-2">
+                            <i class="fas fa-eye text-[10px]"></i>View
+                        </a>
+                        <a href="{% url 'bills:ims_bill_edit' bill.pk %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-blue-600 font-bold text-xs hover:bg-blue-50 hover:border-blue-200 transition">
+                            <i class="fas fa-edit text-[10px]"></i>Edit
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-16 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                                <i class="fas fa-file-invoice-dollar text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-600">No bills found</p>
+                                <p class="text-xs text-slate-400">Add a new bill to track outgoing payments.</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

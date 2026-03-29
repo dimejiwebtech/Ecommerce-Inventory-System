@@ -1,0 +1,48 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Vendors | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Suppliers & Vendors</h1>
+        <p class="text-sm text-slate-500">Manage your product sources and contact info.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_vendor_add' %}" class="bg-[var(--ims-accent)] text-white px-4 py-2 rounded shadow-sm text-sm font-medium hover:opacity-90 transition flex items-center gap-2">
+        <i class="fas fa-plus"></i> Add Vendor
+    </a>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest">
+                    <th class="px-6 py-4 font-bold">Vendor Name</th>
+                    <th class="px-6 py-4 font-bold">Contact Person</th>
+                    <th class="px-6 py-4 font-bold">Email</th>
+                    <th class="px-6 py-4 font-bold">Phone</th>
+                    <th class="px-6 py-4 font-bold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for vendor in vendors %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-4 font-semibold text-slate-800">{{ vendor.name }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ vendor.contact_person|default:"—" }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ vendor.email|default:"—" }}</td>
+                    <td class="px-6 py-4 text-slate-600">{{ vendor.phone|default:"—" }}</td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'catalogue:ims_vendor_edit' vendor.pk %}" class="text-slate-400 hover:text-[var(--ims-accent)] transition p-2">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">No vendors registered.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Wholesaler Details | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Wholesaler Application</h1>
+        <p class="text-sm text-slate-500">Reviewing details for {{ profile.user.get_full_name|default:profile.user.username }}</p>
+    </div>
+    <a href="{% url 'accounts_ims:ims_wholesaler_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Business Info -->
+        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2 text-lg">
+                <i class="fas fa-briefcase text-[var(--ims-accent)] opacity-50"></i> Business Information
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Business Name</label>
+                    <p class="text-slate-800 font-semibold">{{ profile.business_name|default:"Not Provided" }}</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">WhatsApp Number</label>
+                    <p class="text-slate-800 font-semibold flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-500"></i> {{ profile.whatsapp_number }}
+                    </p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Date Applied</label>
+                    <p class="text-slate-600">{{ profile.applied_at|date:"F d, Y @ H:i" }}</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Verification Status</label>
+                    <p>
+                        {% if profile.is_verified %}
+                        <span class="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold uppercase">Verified</span>
+                        <span class="text-[10px] text-slate-400 block mt-1">on {{ profile.verified_at|date:"M d, Y" }}</span>
+                        {% else %}
+                        <span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase">Pending Review</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Info -->
+        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2 text-lg">
+                <i class="fas fa-user text-[var(--ims-accent)] opacity-50"></i> Personal Details
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Full Name</label>
+                    <p class="text-slate-800 font-medium">{{ profile.user.get_full_name|default:"N/A" }}</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</label>
+                    <p class="text-slate-800 font-medium">{{ profile.user.email }}</p>
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Username</label>
+                    <p class="text-slate-600">{{ profile.user.username }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Sidebar -->
+    <div class="space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-6">Management Actions</h3>
+            
+            {% if not profile.is_verified %}
+            <form action="{% url 'accounts_ims:ims_wholesaler_approve' profile.pk %}" method="POST" class="space-y-3">
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-[var(--ims-accent)] text-white py-3 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-md">
+                    <i class="fas fa-check mr-2"></i> Approve Partner
+                </button>
+            </form>
+            
+            <form action="{% url 'accounts_ims:ims_wholesaler_reject' profile.pk %}" method="POST" class="mt-4">
+                {% csrf_token %}
+                <button type="submit" class="w-full bg-white border border-rose-200 text-rose-600 py-3 rounded-lg font-bold text-sm hover:bg-rose-50 transition" onclick="return confirm('Are you sure you want to reject this wholesaler?')">
+                    <i class="fas fa-times mr-2"></i> Reject Application
+                </button>
+            </form>
+            {% else %}
+            <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100 text-center">
+                <i class="fas fa-check-circle text-emerald-500 text-2xl mb-2"></i>
+                <p class="text-sm font-bold text-emerald-800 uppercase tracking-tight">Verified Wholesaler</p>
+                <p class="text-[10px] text-emerald-600 mt-1">This partner has full access to wholesale pricing.</p>
+            </div>
+            
+            <form action="{% url 'accounts_ims:ims_wholesaler_reject' profile.pk %}" method="POST" class="mt-6">
+                {% csrf_token %}
+                <button type="submit" class="w-full text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-rose-500 transition" onclick="return confirm('Revoke verification?')">
+                    Revoke Verification
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Brand Integrity</h4>
+            <p class="text-[11px] text-slate-500 leading-relaxed italic">
+                AURA Wholesalers represent our luxury brand to their clients. Ensure their business profile aligns with our standards before approval.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

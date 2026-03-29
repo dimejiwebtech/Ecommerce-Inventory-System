@@ -1,0 +1,6 @@
+<button hx-post="{% url 'toggle_wishlist' jewellery.id %}"
+        hx-target="this"
+        hx-swap="outerHTML"
+        class="text-shop-text hover:text-shop-gold transition">
+    <i class="{% if wished %}fas{% else %}far{% endif %} fa-heart text-xl"></i>
+</button>

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Stockpile | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <!-- Main -->
+        <div class="flex-1 min-w-0">
+            <div class="mb-8">
+                <h1 class="font-serif text-2xl text-shop-text">My Stockpile</h1>
+                <p class="text-shop-muted text-sm mt-1">View and manage items you've purchased but are currently holding in our vault.</p>
+            </div>
+
+            {% if stockpiles %}
+            <div class="space-y-6">
+                {% for item in stockpiles %}
+                <div class="border border-shop-border bg-white p-6 flex flex-col md:flex-row gap-6 items-start">
+                    <div class="w-24 h-24 border border-shop-border flex-shrink-0 bg-gray-50">
+                        {% if item.order_item.jewellery.primary_image %}
+                        <img src="{{ item.order_item.jewellery.primary_image.image.url }}" 
+                             alt="{{ item.order_item.jewellery.name }}"
+                             class="w-full h-full object-cover">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <i class="fas fa-gem text-shop-gold/30 text-2xl"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h3 class="font-serif text-lg text-shop-text uppercase tracking-wide">{{ item.order_item.jewellery.name }}</h3>
+                                <p class="text-xs text-shop-muted italic">Part of Order #{{ item.order_item.order.order_number }}</p>
+                            </div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-shop-gold bg-shop-gold/10 px-2 py-1 border border-shop-gold/20">Stored</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 mt-4">
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-1">Stored Since</p>
+                                <p class="text-sm text-shop-text">{{ item.stored_since|date:"M d, Y" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-1">Days Stored</p>
+                                <p class="text-sm {% if item.days_stored > 30 %}text-red-500 font-bold{% else %}text-shop-text{% endif %}">
+                                    {{ item.days_stored }} Days
+                                    {% if item.days_stored > 30 %}<span class="text-[10px] block font-normal">(₦200/day fee applying)</span>{% endif %}
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-1">Storage Fee</p>
+                                <p class="text-sm text-shop-text font-bold">₦{{ item.current_fee|default:"0" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex gap-4">
+                            <button class="bg-shop-text hover:bg-shop-gold text-white px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest transition">
+                                Request Release
+                            </button>
+                            <button class="border border-shop-border hover:border-shop-gold text-shop-text px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest transition">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="border border-shop-border border-dashed p-12 text-center bg-shop-bg/30">
+                <div class="w-16 h-16 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold/40 text-2xl mx-auto mb-4">
+                    <i class="fas fa-box"></i>
+                </div>
+                <p class="text-shop-muted italic">You have no items in stockpile.</p>
+                <p class="text-xs text-shop-muted mt-2">Purchased items can be added to your stockpile during checkout.</p>
+            </div>
+            {% endif %}
+            
+            <div class="mt-10 bg-shop-gold/5 border border-shop-gold/20 p-6">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-shop-gold mb-3 flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i> Stockpile Policy
+                </h4>
+                <ul class="text-xs text-shop-text space-y-2 list-disc pl-4">
+                    <li>Items are stored free for the first **30 days**.</li>
+                    <li>After 30 days, a daily storage fee of **₦200** applies.</li>
+                    <li>Storage fees must be cleared before items are released for shipping.</li>
+                    <li>You will receive email notifications at Day 25 and Day 30 of storage.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Addresses | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <!-- Main -->
+        <div class="flex-1 min-w-0">
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <h1 class="font-serif text-2xl text-shop-text">My Addresses</h1>
+                    <p class="text-shop-muted text-sm mt-1">Manage your shipping addresses for faster checkout.</p>
+                </div>
+                <a href="{% url 'accounts:address_add' %}" 
+                   class="bg-shop-text hover:bg-shop-gold text-white px-5 py-2.5 text-xs font-bold uppercase tracking-widest transition">
+                   Add New Address
+                </a>
+            </div>
+
+            {% if addresses %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {% for addr in addresses %}
+                <div class="border border-shop-border p-6 bg-white relative">
+                    {% if addr.is_default %}
+                    <span class="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-tighter text-shop-gold bg-shop-gold/10 px-2 py-0.5 border border-shop-gold/20">Default</span>
+                    {% endif %}
+                    
+                    <h3 class="font-bold text-shop-text mb-2">{{ addr.full_name }}</h3>
+                    <div class="space-y-1 text-sm text-shop-muted">
+                        <p>{{ addr.address_line1 }}</p>
+                        {% if addr.address_line2 %}<p>{{ addr.address_line2 }}</p>{% endif %}
+                        <p>{{ addr.city }}, {{ addr.state }}</p>
+                        <p>{{ addr.country }} {% if addr.postal_code %}- {{ addr.postal_code }}{% endif %}</p>
+                        <p class="pt-2 italic text-xs"><i class="fas fa-phone-alt mr-1"></i> {{ addr.phone }}</p>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-shop-border flex gap-4">
+                        <form action="{% url 'accounts:address_delete' addr.pk %}" method="POST" onsubmit="return confirm('Delete this address?')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-xs text-red-500 hover:underline">Delete</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="border border-shop-border border-dashed p-12 text-center bg-shop-bg/30">
+                <div class="w-16 h-16 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold/40 text-2xl mx-auto mb-4">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <p class="text-shop-muted italic">No addresses saved yet.</p>
+                <a href="{% url 'accounts:address_add' %}" class="text-shop-gold text-sm hover:underline mt-2 inline-block">Add your first address →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

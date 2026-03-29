@@ -1,0 +1,133 @@
+<div id="checkout-summary-container" class="sticky top-28 bg-white border border-shop-border p-6 shadow-sm">
+    <h2 class="font-serif text-xl tracking-widest uppercase text-center font-bold text-shop-text mb-6">YOUR ORDER</h2>
+    
+    <div class="flex justify-between items-center text-xs font-bold uppercase tracking-widest text-shop-text mb-4 pb-2 border-b border-shop-border">
+        <span>Product</span>
+        <span>Subtotal</span>
+    </div>
+
+    <!-- Items -->
+    <div class="space-y-6 mb-6">
+        {% for item in cart.items.all %}
+        <div class="flex gap-4 items-start">
+            <div class="relative w-16 h-16 border border-shop-border bg-white flex-shrink-0">
+                {% if item.jewellery.primary_image %}
+                <img src="{{ item.jewellery.primary_image.image.url }}" alt="{{ item.jewellery.name }}"
+                     class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                    <i class="fas fa-gem text-shop-gold/40"></i>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex flex-col gap-3 flex-1 min-w-0">
+                <p class="text-sm text-shop-text uppercase tracking-wide truncate">{{ item.jewellery.name }}
+                {% if item.variant %}
+                    <span class="text-shop-muted normal-case text-xs inline-block ml-1 truncate">({{ item.variant.size }}{% if item.variant.size and item.variant.color %} / {% endif %}{{ item.variant.color }})</span>
+                {% endif %}
+                </p>
+            <div class="flex justify-between items-center">
+                <!-- HTMX Stepper -->
+                <form hx-post="{% url 'update_cart' item.id %}?template=orders/partials/checkout_summary.html"
+                      hx-target="#checkout-summary-container"
+                      hx-swap="outerHTML"
+                      hx-trigger="change"
+                      class="flex items-center border border-shop-border bg-white"
+                      @submit.prevent>
+                    {% csrf_token %}
+                    <button type="button" onclick="this.nextElementSibling.stepDown(); this.form.dispatchEvent(new Event('change'))"
+                            class="px-3 py-1 text-shop-muted hover:text-shop-text transition">−</button>
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                           class="w-10 text-center text-sm py-1 bg-transparent focus:outline-none pointer-events-none">
+                    <button type="button" onclick="this.previousElementSibling.stepUp(); this.form.dispatchEvent(new Event('change'))"
+                            class="px-3 py-1 text-shop-muted hover:text-shop-text transition">+</button>
+                </form>
+                
+                <p class="text-sm text-shop-text">₦{{ item.line_total|floatformat:2 }}</p>
+            </div>
+        </div>
+        <hr class="border-shop-border border-dashed">
+        {% endfor %}
+    </div>
+
+    <!-- Subtotal -->
+    <div class="flex justify-between font-bold text-shop-text text-sm mb-6">
+        <span>Subtotal</span>
+        <span class="text-shop-text">₦<span id="checkout-raw-subtotal">{{ grand_total|default:cart.total|floatformat:0 }}</span>.00</span>
+    </div>
+
+    <hr class="border-shop-border mb-6">
+
+    <!-- Shipping / Stockpile (AlpineJS driven) -->
+    <div x-show="country === 'NG' && state !== ''" x-cloak class="space-y-6 mb-6">
+        
+        <!-- Stockpile -->
+        <div>
+            <label class="flex justify-end items-center gap-2 cursor-pointer group">
+                <span class="font-bold text-shop-text text-sm group-hover:text-shop-gold transition-colors">Stockpile with us</span>
+                <input type="radio" name="shipping_method" value="stockpile" x-model="shippingMethod" class="accent-shop-text w-4 h-4">
+            </label>
+            <p class="text-[11px] text-red-500 text-right mt-1.5 ml-auto max-w-[280px] leading-relaxed">
+                Shop and store your items with us for up to 30 days, counted from your first stockpile order. Kindly request delivery within this period. Storage beyond 30 days attracts a ₦200 daily fee.
+            </p>
+        </div>
+
+        <!-- Shipment -->
+        <div class="flex items-start justify-between">
+            <span class="font-bold text-shop-text text-sm mt-0.5">Shipment</span>
+            <div class="space-y-5 text-right flex-1 ml-4">
+                
+                <label class="flex items-start justify-end gap-3 cursor-pointer group">
+                    <div class="text-sm">
+                        <span class="block group-hover:text-shop-gold transition-colors text-gray-800">Agbowa, Imota Ikorodu (Park delivery with Logistics)</span>
+                        <span class="block text-[11px] text-gray-500 mt-1">Estimated Fee: 5,200 (1-2 working days)</span>
+                    </div>
+                    <input type="radio" name="shipping_method" value="agbowa" x-model="shippingMethod" class="mt-1 accent-shop-text w-4 h-4 flex-shrink-0">
+                </label>
+
+                <label class="flex items-start justify-end gap-3 cursor-pointer group">
+                    <div class="text-sm">
+                        <span class="block group-hover:text-shop-gold transition-colors text-gray-800">Badagry, Epe, Eleko, Ijede (Park delivery with Logistics)</span>
+                        <span class="block text-[11px] text-gray-500 mt-1">Estimated Fee: 4,300 (1-2 working days)</span>
+                    </div>
+                    <input type="radio" name="shipping_method" value="badagry" x-model="shippingMethod" class="mt-1 accent-shop-text w-4 h-4 flex-shrink-0">
+                </label>
+
+                <label class="flex items-start justify-end gap-3 cursor-pointer group">
+                    <div class="text-sm">
+                        <span class="block group-hover:text-shop-gold transition-colors text-gray-800">Ibeju Lekki (Park delivery with Logistics)</span>
+                        <span class="block text-[11px] text-gray-500 mt-1">Estimated Fee: 4,300 (1-2 working days)</span>
+                    </div>
+                    <input type="radio" name="shipping_method" value="ibeju" x-model="shippingMethod" class="mt-1 accent-shop-text w-4 h-4 flex-shrink-0">
+                </label>
+
+                <label class="flex items-start justify-end gap-3 cursor-pointer group">
+                    <div class="text-sm">
+                        <span class="block group-hover:text-shop-gold transition-colors text-gray-800">Others (Park delivery with Logistics)</span>
+                        <span class="block text-[11px] text-gray-500 mt-1">Estimated Fee: 3000 to 5000 (1-2 days)</span>
+                    </div>
+                    <input type="radio" name="shipping_method" value="others" x-model="shippingMethod" class="mt-1 accent-shop-text w-4 h-4 flex-shrink-0">
+                </label>
+
+                <label class="flex items-start justify-end gap-3 cursor-pointer group">
+                    <div class="text-sm">
+                        <span class="block group-hover:text-shop-gold transition-colors text-gray-800">Local pickup</span>
+                        <span class="block text-[11px] text-gray-500 mt-1">Shop 28, Kade Shopping Complex, Dada Estate Osogbo</span>
+                    </div>
+                    <input type="radio" name="shipping_method" value="pickup" x-model="shippingMethod" class="mt-1 accent-shop-text w-4 h-4 flex-shrink-0">
+                </label>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Total -->
+    <hr class="border-shop-border mb-6">
+    <div class="flex justify-between items-center">
+        <span class="font-bold text-shop-text text-sm">Total</span>
+        <span class="text-xl font-bold text-shop-text" x-text="'₦' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+            ₦{{ grand_total|default:cart.total|floatformat:2 }}
+        </span>
+    </div>
+</div>

@@ -1,0 +1,81 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Manage Reviews | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Product Reviews</h1>
+        <p class="text-sm text-slate-500">Moderate customer feedback and ratings</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="flex gap-2 mb-8">
+    <a href="?status=" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition {% if not status_filter %}bg-slate-800 text-white{% else %}bg-slate-100 text-slate-500 hover:bg-slate-200{% endif %}">
+        All
+    </a>
+    <a href="?status=pending" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition {% if status_filter == 'pending' %}bg-amber-500 text-white{% else %}bg-slate-100 text-slate-500 hover:bg-slate-200{% endif %}">
+        Pending
+    </a>
+    <a href="?status=approved" class="px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition {% if status_filter == 'approved' %}bg-emerald-500 text-white{% else %}bg-slate-100 text-slate-500 hover:bg-slate-200{% endif %}">
+        Approved
+    </a>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+    {% for review in reviews %}
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6 flex flex-col">
+        <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 font-black">
+                    {{ review.user.username|slice:":1"|upper }}
+                </div>
+                <div>
+                    <h3 class="font-bold text-slate-800 text-sm">{{ review.user.username }}</h3>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest">{{ review.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+            <div class="flex text-amber-400 text-[10px] gap-0.5">
+                {% for i in "12345" %}
+                <i class="{% if forloop.counter <= review.rating %}fas{% else %}far{% endif %} fa-star"></i>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="mb-4 flex-grow">
+            <p class="text-[10px] font-black text-slate-300 uppercase tracking-tighter mb-1">{{ review.product.name }}</p>
+            <p class="text-slate-600 text-sm italic leading-relaxed">"{{ review.comment }}"</p>
+        </div>
+
+        <div class="pt-4 border-t border-slate-50 flex items-center justify-between">
+            <div class="flex gap-2">
+                {% if not review.is_approved %}
+                <form action="{% url 'reviews:ims_review_approve' review.pk %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-emerald-200 transition">
+                        Approve
+                    </button>
+                </form>
+                {% else %}
+                <span class="px-3 py-1.5 bg-slate-50 text-slate-400 rounded text-[10px] font-bold uppercase tracking-widest">
+                    Approved
+                </span>
+                {% endif %}
+            </div>
+            
+            <form action="{% url 'reviews:ims_review_delete' review.pk %}" method="post" onsubmit="return confirm('Delete this review?')">
+                {% csrf_token %}
+                <button type="submit" class="text-slate-300 hover:text-rose-500 transition">
+                    <i class="fas fa-trash-alt text-xs"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full py-20 text-center bg-white rounded-xl border border-slate-100">
+        <p class="text-slate-400 italic">No reviews found matching your filter.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

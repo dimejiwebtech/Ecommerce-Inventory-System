@@ -1,0 +1,105 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Activity History | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Activity History</h1>
+        <p class="text-sm text-slate-500">Audit trail of all administrative actions</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm mb-8">
+    <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Action Type</label>
+            <select name="action" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[var(--ims-accent)] text-sm bg-white">
+                <option value="">All Actions</option>
+                {% for code, label in action_choices %}
+                <option value="{{ code }}" {% if filters.action == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Staff Member</label>
+            <select name="user" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[var(--ims-accent)] text-sm bg-white">
+                <option value="">All Staff</option>
+                {% for u in staff_users %}
+                <option value="{{ u.id }}" {% if filters.user_id == u.id|stringformat:"s" %}selected{% endif %}>{{ u.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Date From</label>
+            <input type="date" name="from" value="{{ filters.date_from }}" class="w-full border border-slate-200 rounded-lg px-4 py-2 focus:outline-none focus:border-[var(--ims-accent)] text-sm">
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="flex-1 bg-slate-800 text-white py-2.5 rounded-lg font-bold text-sm hover:bg-slate-900 transition">
+                Filter
+            </button>
+            <a href="{% url 'ims_activity_history' %}" class="px-4 py-2.5 bg-slate-100 text-slate-500 rounded-lg hover:bg-slate-200 transition flex items-center justify-center">
+                <i class="fas fa-sync-alt"></i>
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-widest">
+                <tr>
+                    <th class="px-6 py-4 font-bold">Timestamp</th>
+                    <th class="px-6 py-4 font-bold">User</th>
+                    <th class="px-6 py-4 font-bold">Action</th>
+                    <th class="px-6 py-4 font-bold">Log Details</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for log in logs %}
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400">
+                        {{ log.timestamp|date:"M d, Y" }} <span class="opacity-50 ml-1">{{ log.timestamp|date:"H:i" }}</span>
+                    </td>
+                    <td class="px-6 py-4 font-bold text-slate-700">
+                        {% if log.user %}
+                        <div class="flex items-center gap-2">
+                            <div class="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-400 font-black">
+                                {{ log.user.username|slice:":1"|upper }}
+                            </div>
+                            {{ log.user.username }}
+                        </div>
+                        {% else %}
+                        <span class="text-slate-300 italic">System</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter
+                            {% if log.action_type == 'delete' %}bg-rose-100 text-rose-700
+                            {% elif log.action_type == 'create' %}bg-emerald-100 text-emerald-700
+                            {% elif log.action_type == 'update' %}bg-blue-100 text-blue-700
+                            {% else %}bg-slate-100 text-slate-600{% endif %}">
+                            {{ log.action_type }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-slate-600 text-xs">{{ log.description }}</p>
+                        {% if log.model_name %}
+                        <span class="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{{ log.model_name }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-12 text-center text-slate-400 italic">
+                        No activity logs found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

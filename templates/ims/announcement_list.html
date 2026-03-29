@@ -1,0 +1,90 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Announcements Management | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Announcements</h1>
+        <p class="text-sm text-slate-500">Manage promotional banners and system announcements shown to customers.</p>
+    </div>
+    <div class="flex gap-3">
+        <a href="{% url 'catalogue:ims_announcement_add' %}" class="bg-[var(--ims-accent)] text-white px-4 py-2 rounded shadow-sm text-sm font-medium hover:opacity-90 transition flex items-center gap-2">
+            <i class="fas fa-bullhorn"></i>New Announcement
+        </a>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="text-slate-500 bg-slate-50 text-[10px] uppercase tracking-widest font-bold">
+                    <th class="px-6 py-4">Announcement Text</th>
+                    <th class="px-6 py-4">Call to Action</th>
+                    <th class="px-6 py-4 text-center">Status</th>
+                    <th class="px-6 py-4">Created Date</th>
+                    <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for item in announcements %}
+                <tr class="hover:bg-slate-50/50 transition group">
+                    <td class="px-6 py-4 max-w-xs">
+                        <p class="font-medium text-slate-700 truncate" title="{{ item.text }}">{{ item.text }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if item.link %}
+                        <a href="{{ item.link }}" target="_blank" class="text-blue-500 hover:underline inline-flex items-center gap-1.5 text-xs font-bold">
+                            {{ item.link_label|default:"Visit Link" }} <i class="fas fa-external-link-alt text-[10px]"></i>
+                        </a>
+                        {% else %}
+                        <span class="text-slate-400 italic text-xs">No link provided</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        {% if item.is_active %}
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter bg-emerald-50 text-emerald-600 border border-emerald-100">
+                            Active
+                        </span>
+                        {% else %}
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter bg-slate-100 text-slate-500 border border-slate-200">
+                            Inactive
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-slate-500 text-xs">
+                        {{ item.created_at|date:"M d, Y" }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'catalogue:ims_announcement_edit' item.pk %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-blue-600 font-bold text-xs hover:bg-blue-50 hover:border-blue-200 transition mr-2">
+                            <i class="fas fa-edit text-[10px]"></i>Edit
+                        </a>
+                        <form action="{% url 'catalogue:ims_announcement_delete' item.pk %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-rose-600 font-bold text-xs hover:bg-rose-50 hover:border-rose-200 transition" onclick="return confirm('Are you sure you want to delete this announcement?');">
+                                <i class="fas fa-trash-alt text-[10px]"></i>Delete
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-6 py-16 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                                <i class="fas fa-bullhorn text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-600">No announcements found</p>
+                                <p class="text-xs text-slate-400">Create global banners to alert customers of sales or news.</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Georgia, serif; background: #fdf8f2; margin: 0; padding: 40px 20px; }
+  .container { max-width: 600px; margin: 0 auto; background: white; border: 1px solid #e5e7eb; }
+  .header { background: #1a1a1a; padding: 32px; text-align: center; }
+  .logo { color: white; font-size: 28px; font-weight: bold; }
+  .logo span { color: #c9a84c; }
+  .body { padding: 40px 32px; }
+  h1 { color: #1a1a1a; font-size: 24px; margin: 0 0 16px; }
+  p { color: #6b7280; line-height: 1.7; margin: 0 0 16px; }
+  .btn { display: inline-block; background: #c9a84c; color: white; padding: 14px 32px; text-decoration: none; font-family: sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; margin: 8px 0; }
+  .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 20px 32px; text-align: center; font-size: 12px; color: #9ca3af; }
+  .approved-badge { display: inline-block; background: #d1fae5; color: #059669; padding: 10px 24px; border-radius: 999px; font-family: sans-serif; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .benefit { padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+  .benefit:last-child { border-bottom: none; }
+  .benefit strong { color: #1a1a1a; font-family: sans-serif; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">AURA<span>.</span></div>
+  </div>
+  <div class="body">
+    <h1>Wholesaler Application Approved!</h1>
+    <p>Hi {{ user.first_name|default:user.username }},</p>
+    <p>Great news — your wholesaler application has been reviewed and approved!</p>
+
+    <p style="text-align: center; margin: 28px 0;">
+      <span class="approved-badge">✓ Verified Wholesaler</span>
+    </p>
+
+    <p>You now have access to exclusive benefits:</p>
+
+    <div style="margin: 20px 0;">
+      <div class="benefit">
+        <strong>Wholesale Pricing</strong>
+        <p style="margin: 4px 0 0; font-size: 13px;">All products now show exclusive wholesale rates when you're logged in.</p>
+      </div>
+      <div class="benefit">
+        <strong>Bulk Orders</strong>
+        <p style="margin: 4px 0 0; font-size: 13px;">Place larger orders with streamlined processing and priority fulfilment.</p>
+      </div>
+      <div class="benefit">
+        <strong>Partner Discounts</strong>
+        <p style="margin: 4px 0 0; font-size: 13px;">Access to partner-exclusive coupons and seasonal promotions.</p>
+      </div>
+    </div>
+
+    <p style="text-align:center; margin: 32px 0;">
+      <a href="{{ shop_url }}" class="btn">Browse Wholesale Catalogue</a>
+    </p>
+    <p style="font-size: 12px; color: #9ca3af;">If you have any questions about your wholesale account, reply to this email.</p>
+  </div>
+  <div class="footer">© AURA Jewellery. All rights reserved.</div>
+</div>
+</body>
+</html>

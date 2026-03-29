@@ -1,0 +1,35 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-ims-bodyText">Shop Announcement Banner</h1>
+        <p class="text-sm text-gray-500 mt-1">Update the global banner displayed at the top of the frontend store.</p>
+    </div>
+
+    <form class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6 space-y-6">
+        
+        <div class="flex items-center gap-3 mb-4">
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-ims-accent"></div>
+            </label>
+            <span class="text-sm font-bold text-ims-bodyText">Banner is Currently Active</span>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Banner Text</label>
+            <input type="text" value="Free shipping on all retail orders over ₦100,000!" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Call to Action Link (Optional)</label>
+            <input type="text" value="/shop" placeholder="e.g., /collections/sale" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+        </div>
+
+        <div class="pt-4 border-t border-gray-100 flex justify-end">
+            <button type="submit" class="px-6 py-2 bg-ims-accent hover:bg-green-600 text-white rounded font-medium transition shadow-sm">Publish Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

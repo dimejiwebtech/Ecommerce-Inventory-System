@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Georgia, serif; background: #fdf8f2; margin: 0; padding: 40px 20px; }
+  .container { max-width: 600px; margin: 0 auto; background: white; border: 1px solid #e5e7eb; }
+  .header { background: #1a1a1a; padding: 32px; text-align: center; }
+  .logo { color: white; font-size: 28px; font-weight: bold; }
+  .logo span { color: #c9a84c; }
+  .body { padding: 40px 32px; }
+  h1 { color: #1a1a1a; font-size: 24px; margin: 0 0 16px; }
+  p { color: #6b7280; line-height: 1.7; margin: 0 0 16px; }
+  .btn { display: inline-block; background: #c9a84c; color: white; padding: 14px 32px; text-decoration: none; font-family: sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; margin: 8px 0; }
+  .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 20px 32px; text-align: center; font-size: 12px; color: #9ca3af; }
+  .order-number { font-family: monospace; font-size: 18px; font-weight: bold; color: #c9a84c; letter-spacing: 0.05em; }
+  table.items { width: 100%; border-collapse: collapse; margin: 24px 0; }
+  table.items th { background: #f9fafb; text-align: left; padding: 10px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; font-family: sans-serif; border-bottom: 2px solid #e5e7eb; }
+  table.items td { padding: 12px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; }
+  table.items .price { text-align: right; font-weight: bold; }
+  .totals { text-align: right; margin: 16px 0; }
+  .totals p { margin: 4px 0; font-size: 14px; }
+  .totals .grand { font-size: 20px; font-weight: bold; color: #1a1a1a; }
+  .address-box { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin: 16px 0; }
+  .address-box h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #6b7280; font-family: sans-serif; }
+  .address-box p { margin: 0; font-size: 14px; color: #374151; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">AURA<span>.</span></div>
+  </div>
+  <div class="body">
+    <h1>Order Confirmed!</h1>
+    <p>Hi {{ order.customer_name }},</p>
+    <p>Thank you for your order. We've received your purchase and it's being prepared.</p>
+
+    <p style="margin: 24px 0 8px;">Your order number:</p>
+    <p class="order-number">{{ order.order_number }}</p>
+
+    <table class="items">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>SKU</th>
+          <th>Qty</th>
+          <th class="price">Price</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order.items.all %}
+        <tr>
+          <td>{{ item.jewellery_name }}</td>
+          <td style="font-family: monospace; font-size: 12px; color: #9ca3af;">{{ item.jewellery_sku }}</td>
+          <td>{{ item.quantity }}</td>
+          <td class="price">₦{{ item.line_total|floatformat:2 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <p>Subtotal: ₦{{ order.subtotal|floatformat:2 }}</p>
+      {% if order.discount_amount %}
+      <p style="color: #059669;">Discount: -₦{{ order.discount_amount|floatformat:2 }}</p>
+      {% endif %}
+      {% if order.shipping_fee %}
+      <p>Shipping: ₦{{ order.shipping_fee|floatformat:2 }}</p>
+      {% endif %}
+      <p class="grand">Total: ₦{{ order.grand_total|floatformat:2 }}</p>
+    </div>
+
+    {% if order.shipping_address %}
+    <div class="address-box">
+      <h3>Shipping Address</h3>
+      <p>
+        {{ order.shipping_address.full_name }}<br>
+        {{ order.shipping_address.address_line1 }}<br>
+        {% if order.shipping_address.address_line2 %}{{ order.shipping_address.address_line2 }}<br>{% endif %}
+        {{ order.shipping_address.city }}, {{ order.shipping_address.state }}<br>
+        {{ order.shipping_address.phone }}
+      </p>
+    </div>
+    {% endif %}
+
+    <p style="text-align:center; margin: 32px 0;">
+      <a href="{{ order_url }}" class="btn">View My Order</a>
+    </p>
+    <p style="font-size: 12px; color: #9ca3af;">If you have any questions, reply to this email or contact our support team.</p>
+  </div>
+  <div class="footer">© AURA Jewellery. All rights reserved.</div>
+</div>
+</body>
+</html>

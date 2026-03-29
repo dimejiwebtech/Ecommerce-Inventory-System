@@ -1,0 +1,82 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Sales Report</h1>
+        <p class="text-sm text-gray-500 mt-1">Financial overview and transaction history.</p>
+    </div>
+    <div class="flex gap-2">
+        <button class="bg-white border border-gray-300 text-green-700 px-4 py-2 rounded shadow-sm text-sm font-medium hover:bg-green-50 transition flex items-center gap-2">
+            <i class="fas fa-file-excel"></i> Export Excel
+        </button>
+        <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded shadow-sm text-sm font-medium hover:bg-gray-50 transition flex items-center gap-2">
+            <i class="fas fa-file-csv"></i> Export CSV
+        </button>
+    </div>
+</div>
+
+<div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap gap-4 items-end">
+    <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Start Date</label>
+        <input type="date" class="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-ims-accent outline-none">
+    </div>
+    <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">End Date</label>
+        <input type="date" class="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-ims-accent outline-none">
+    </div>
+    <div>
+        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Channel</label>
+        <select class="border border-gray-300 rounded px-3 py-2 text-sm focus:ring-1 focus:ring-ims-accent outline-none bg-white">
+            <option>All Channels</option>
+            <option>Online Store</option>
+            <option>POS Terminal</option>
+        </select>
+    </div>
+    <button class="bg-ims-accent hover:bg-green-600 text-white px-6 py-2 rounded text-sm font-bold shadow-sm transition">Generate</button>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+    <div class="bg-ims-pageBg border border-gray-200 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Gross Sales</p>
+        <p class="text-3xl font-bold text-ims-bodyText mt-2">₦8,450,000</p>
+    </div>
+    <div class="bg-ims-pageBg border border-gray-200 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Stockpile Fees Collected</p>
+        <p class="text-3xl font-bold text-purple-700 mt-2">₦42,600</p>
+    </div>
+    <div class="bg-ims-pageBg border border-gray-200 rounded-lg p-5 shadow-sm">
+        <p class="text-sm font-bold text-gray-500 uppercase tracking-wider">Total Orders</p>
+        <p class="text-3xl font-bold text-blue-600 mt-2">124</p>
+    </div>
+</div>
+
+<div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+        <h2 class="font-bold text-ims-bodyText">Top Selling Products (Selected Range)</h2>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-white text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="px-5 py-3 font-medium">Product</th>
+                    <th class="px-5 py-3 font-medium text-center">Units Sold</th>
+                    <th class="px-5 py-3 font-medium text-right">Revenue</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-3 font-bold text-ims-bodyText">Radiant Diamond Ring</td>
+                    <td class="px-5 py-3 text-center font-bold">12</td>
+                    <td class="px-5 py-3 text-right text-ims-accent font-bold">₦5,400,000</td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-3 font-bold text-ims-bodyText">Gold Chain 18k</td>
+                    <td class="px-5 py-3 text-center font-bold">8</td>
+                    <td class="px-5 py-3 text-right text-ims-accent font-bold">₦960,000</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

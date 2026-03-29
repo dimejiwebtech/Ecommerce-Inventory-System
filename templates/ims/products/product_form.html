@@ -1,0 +1,72 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center gap-4">
+        <a href="/ims/products" class="text-gray-400 hover:text-ims-bodyText"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Add New Product</h1>
+    </div>
+
+    <form class="space-y-6">
+        <div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-bold text-ims-bodyText mb-4 border-b border-gray-100 pb-2">Basic Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+                    <input type="text" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">SKU</label>
+                    <input type="text" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none bg-white">
+                        <option>Rings</option>
+                        <option>Necklaces</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea rows="4" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-bold text-ims-bodyText mb-4 border-b border-gray-100 pb-2">Pricing Matrix <span class="text-red-500">*</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-4 rounded border border-gray-200">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Standard Retail Price (₦)</label>
+                    <input type="number" required class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Visible to guests and regular users.</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-purple-700 mb-1">Wholesale Price (₦)</label>
+                    <input type="number" required class="w-full border border-purple-300 rounded px-4 py-2 focus:ring-1 focus:ring-purple-500 outline-none">
+                    <p class="text-xs text-gray-500 mt-1">Visible only to verified wholesalers.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6">
+            <h2 class="text-lg font-bold text-ims-bodyText mb-4 border-b border-gray-100 pb-2">Inventory Control</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Initial Stock Quantity</label>
+                    <input type="number" value="0" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Low Stock Alert Threshold</label>
+                    <input type="number" value="5" class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-4">
+            <a href="/ims/products" class="px-6 py-2 border border-gray-300 rounded text-gray-700 hover:bg-gray-50 font-medium transition">Cancel</a>
+            <button type="submit" class="px-6 py-2 bg-ims-accent hover:bg-green-600 text-white rounded font-medium transition shadow-sm">Save Product</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

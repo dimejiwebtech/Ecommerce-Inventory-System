@@ -1,0 +1,124 @@
+{% extends 'ims/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+        <p class="text-sm text-slate-500">Record stock procurement from your vendors.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_po_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to PO List
+    </a>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Main Details (Left) -->
+        <div class="lg:col-span-3 space-y-8">
+            
+            <!-- Items Section -->
+            <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-slate-50 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-list opacity-30"></i> Order Items
+                    </h3>
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Stock will update upon "Receive"</p>
+                </div>
+                
+                {% if formset %}
+                <div class="overflow-x-auto">
+                    {{ formset.management_form }}
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest text-left">
+                                <th class="px-6 py-4 font-bold">Product</th>
+                                <th class="px-6 py-4 font-bold w-24">Quantity</th>
+                                <th class="px-6 py-4 font-bold w-32">Unit Cost (₦)</th>
+                                <th class="px-6 py-4 font-bold w-12 text-center">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            {% for item_form in formset %}
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="px-6 py-4">
+                                    {{ item_form.id }}
+                                    {{ item_form.jewellery }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ item_form.quantity }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ item_form.unit_cost }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    {{ item_form.DELETE }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-6 bg-slate-50/50 border-t border-slate-50">
+                    <p class="text-xs text-slate-400 italic">Total PO Amount: <span class="font-bold text-slate-800">₦{{ po.total_amount|floatformat:0 }}</span></p>
+                </div>
+                {% else %}
+                <div class="p-10 text-center text-slate-400 italic bg-slate-50/30">
+                    Submit the header details first to add items to this order.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Notes -->
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Internal Procurement Notes</label>
+                {{ form.notes }}
+            </div>
+        </div>
+
+        <!-- Sidebar (Right) -->
+        <div class="space-y-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm space-y-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">PO Number</label>
+                    {{ form.po_number }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Vendor</label>
+                    {{ form.vendor }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Order Date</label>
+                    {{ form.order_date }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Status</label>
+                    {{ form.status }}
+                </div>
+
+                <div class="pt-6 border-t border-slate-100">
+                    <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold tracking-widest uppercase hover:bg-slate-900 transition-all shadow-lg">
+                        Save Order
+                    </button>
+                    {% if po and po.status != 'received' %}
+                    <a href="{% url 'catalogue:ims_po_receive' po.pk %}" class="block w-full mt-3 text-center bg-emerald-600 text-white py-3 rounded-xl font-bold tracking-widest uppercase hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
+                        Receive Items
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-xl border border-blue-100 flex gap-4">
+                <i class="fas fa-info-circle text-blue-500 mt-1"></i>
+                <p class="text-xs text-blue-800 leading-relaxed font-medium">
+                    Setting the status to <b>Ordered</b> locks the items. Stock is only updated when you click <b>Receive Items</b>.
+                </p>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

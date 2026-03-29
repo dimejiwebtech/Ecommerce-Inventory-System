@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In | AURA{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-shop-bg flex items-center justify-center py-16 px-4">
+    <div class="w-full max-w-md bg-white border border-shop-border p-8 sm:p-10"
+         x-data="{ showPw: false }">
+
+        <div class="text-center mb-8">
+            <a href="/" class="font-serif text-3xl font-bold text-shop-text">AURA<span class="text-shop-gold">.</span></a>
+            <p class="text-shop-muted text-sm mt-2">Sign in to your account</p>
+        </div>
+
+        {% if error %}
+        <div class="bg-red-50 border border-red-200 rounded-sm p-4 mb-6 text-sm text-red-700">
+            {{ error }}
+            {% if show_resend %}
+            <form method="post" action="{% url 'accounts:resend_verification' %}" class="mt-2">
+                {% csrf_token %}
+                <input type="hidden" name="email" value="{{ resend_email }}">
+                <button type="submit" class="text-shop-gold underline text-xs">Resend verification email</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="post" action="{% url 'accounts:login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}"
+              class="space-y-5">
+            {% csrf_token %}
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-widest text-shop-text mb-1">Email Address</label>
+                <input type="email" name="email" value="{{ post.email|default:'' }}" required autofocus
+                       class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-transparent">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-widest text-shop-text mb-1">Password</label>
+                <div class="relative">
+                    <input :type="showPw ? 'text' : 'password'" name="password" required autocomplete="current-password"
+                           class="w-full border border-shop-border px-4 py-3 pr-12 text-sm focus:outline-none focus:border-shop-gold transition bg-transparent">
+                    <button type="button" @click="showPw = !showPw"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-shop-muted hover:text-shop-gold transition">
+                        <i :class="showPw ? 'fas fa-eye-slash' : 'fas fa-eye'" class="text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit"
+                    class="w-full bg-shop-text hover:bg-shop-gold text-white py-4 font-medium tracking-wide transition text-sm">
+                Sign In
+            </button>
+        </form>
+
+        <p class="text-center text-sm text-shop-muted mt-6">
+            Don't have an account?
+            <a href="{% url 'accounts:register' %}" class="text-shop-gold hover:underline font-medium">Create one</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

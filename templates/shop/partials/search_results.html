@@ -1,0 +1,23 @@
+{% if results %}
+    {% for item in results %}
+    <a href="{% url 'product_detail' item.slug %}"
+       class="flex items-center gap-3 px-4 py-3 hover:bg-shop-bg transition group">
+        {% with img=item.primary_image %}
+        {% if img %}
+            <img src="{{ img.image.url }}" alt="{{ item.name }}"
+                 class="w-12 h-12 object-cover border border-shop-border flex-shrink-0">
+        {% else %}
+            <div class="w-12 h-12 bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-gem text-shop-muted"></i>
+            </div>
+        {% endif %}
+        {% endwith %}
+        <div>
+            <p class="text-sm font-medium text-shop-text group-hover:text-shop-gold">{{ item.name }}</p>
+            <p class="text-xs text-shop-muted">{{ item.category.name }}</p>
+        </div>
+    </a>
+    {% endfor %}
+{% elif query %}
+    <p class="px-4 py-3 text-sm text-shop-muted">No results for "{{ query }}"</p>
+{% endif %}

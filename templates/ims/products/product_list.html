@@ -1,0 +1,68 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-ims-bodyText">Inventory Management</h1>
+    <a href="/ims/products/new" class="bg-ims-accent hover:bg-green-600 text-white px-4 py-2 rounded shadow-sm text-sm font-medium transition">
+        <i class="fas fa-plus mr-1"></i> Add Product
+    </a>
+</div>
+
+<div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between gap-4 bg-gray-50 rounded-t-lg">
+        <div class="relative w-full sm:w-72">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search by name, SKU..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-ims-accent focus:border-ims-accent outline-none">
+        </div>
+        <div class="flex gap-2">
+            <select class="border border-gray-300 text-sm rounded px-3 py-2 text-gray-700 bg-white">
+                <option>All Categories</option>
+                <option>Rings</option>
+                <option>Necklaces</option>
+            </select>
+            <button class="border border-gray-300 bg-white text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-50"><i class="fas fa-filter"></i></button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-white text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="px-5 py-3 font-medium">Product & SKU</th>
+                    <th class="px-5 py-3 font-medium">Category</th>
+                    <th class="px-5 py-3 font-medium">Retail Price</th>
+                    <th class="px-5 py-3 font-medium text-purple-700">Wholesale Price</th>
+                    <th class="px-5 py-3 font-medium">Stock</th>
+                    <th class="px-5 py-3 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                <tr class="hover:bg-gray-50 transition group">
+                    <td class="px-5 py-3">
+                        <div class="flex items-center gap-3">
+                            <img src="https://via.placeholder.com/40" class="w-10 h-10 rounded object-cover border border-gray-200">
+                            <div>
+                                <p class="font-bold text-ims-bodyText">Radiant Diamond Ring</p>
+                                <p class="text-xs text-gray-500">SKU: AUR-8923</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-3 text-gray-600">Rings</td>
+                    <td class="px-5 py-3 font-medium">₦450,000</td>
+                    <td class="px-5 py-3 font-medium text-purple-700">₦380,000</td>
+                    <td class="px-5 py-3">
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">24</span>
+                    </td>
+                    <td class="px-5 py-3 text-right">
+                        <div class="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <a href="/ims/products/1/stock-log" class="text-gray-400 hover:text-blue-600" title="Stock Log"><i class="fas fa-history"></i></a>
+                            <a href="/ims/products/1/edit" class="text-gray-400 hover:text-ims-accent" title="Edit"><i class="fas fa-edit"></i></a>
+                            <button class="text-gray-400 hover:text-ims-danger" title="Delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

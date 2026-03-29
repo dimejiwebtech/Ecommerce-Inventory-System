@@ -1,0 +1,58 @@
+<!-- templates/accounts/partials/dashboard_sidebar.html -->
+<aside class="w-full md:w-60 flex-shrink-0">
+    <div class="mb-6 px-1">
+        <div class="w-16 h-16 rounded-full bg-shop-gold/10 border border-shop-gold/30 flex items-center justify-center mb-3">
+            {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" class="w-16 h-16 rounded-full object-cover">
+            {% else %}
+            <span class="font-serif text-2xl text-shop-gold">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+            {% endif %}
+        </div>
+        <p class="font-serif text-lg text-shop-text">{{ user.get_full_name|default:user.username }}</p>
+        <p class="text-xs text-shop-muted">{{ user.email }}</p>
+        {% if user.role == 'wholesaler' %}
+        <span class="inline-flex items-center gap-1 mt-2 text-[10px] font-semibold uppercase tracking-wider text-shop-gold bg-shop-gold/10 px-2 py-1">
+            <i class="fas fa-crown"></i> Wholesaler
+        </span>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar Navigation -->
+    <nav class="space-y-1">
+        <a href="{% url 'accounts:customer_dashboard' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'customer_dashboard' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-th-large w-4"></i>
+            <span>Overview</span>
+        </a>
+        <a href="{% url 'accounts:order_list' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'order_list' or request.resolver_match.url_name == 'order_detail' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-shopping-bag w-4"></i>
+            <span>Order History</span>
+        </a>
+        <a href="{% url 'accounts:stockpile_list' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'stockpile_list' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-box-open w-4"></i>
+            <span>My Stockpile</span>
+        </a>
+        <a href="{% url 'accounts:wishlist' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'wishlist' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-heart w-4"></i>
+            <span>My Wishlist</span>
+        </a>
+        <a href="{% url 'accounts:address_list' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'address_list' or request.resolver_match.url_name == 'address_add' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-map-marker-alt w-4"></i>
+            <span>Addresses</span>
+        </a>
+        <a href="{% url 'accounts:profile' %}" 
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 {% if request.resolver_match.url_name == 'profile' %}bg-shop-gold text-white shadow-lg shadow-shop-gold/20{% else %}text-shop-muted hover:text-shop-gold hover:bg-shop-bg{% endif %}">
+            <i class="fas fa-user-cog w-4"></i>
+            <span>Account Settings</span>
+        </a>
+        <a href="{% url 'accounts:logout' %}"
+           class="flex items-center gap-3 px-4 py-3 text-xs font-bold uppercase tracking-widest transition-all duration-300 text-shop-muted hover:text-red-500 hover:bg-shop-bg">
+           <i class="fas fa-sign-out-alt w-4"></i>
+           <span>Log Out</span>
+        </a>
+    </nav>
+</aside>

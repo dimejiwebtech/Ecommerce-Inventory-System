@@ -1,0 +1,99 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Vault & Stockpile Management</h1>
+        <p class="text-sm text-gray-500 mt-1">Monitor vaulted items and track accrued storage fees (₦200/day after 30 days).</p>
+    </div>
+</div>
+
+<div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between gap-4 rounded-t-lg">
+        <div class="flex space-x-2">
+            <button class="px-4 py-2 bg-ims-bodyText text-white text-sm font-medium rounded shadow-sm">All Active</button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-ims-danger hover:bg-red-50 text-sm font-medium rounded flex items-center gap-2">
+                <i class="fas fa-exclamation-circle"></i> Overdue Fees
+            </button>
+        </div>
+        <div class="relative w-full sm:w-64">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search customer or SKU..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-ims-accent outline-none">
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-white text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="px-5 py-3 font-medium">Customer</th>
+                    <th class="px-5 py-3 font-medium">Vaulted Item</th>
+                    <th class="px-5 py-3 font-medium">Date Vaulted</th>
+                    <th class="px-5 py-3 font-medium">Days Held</th>
+                    <th class="px-5 py-3 font-medium">Accrued Fees</th>
+                    <th class="px-5 py-3 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                
+                <tr class="hover:bg-gray-50 transition bg-red-50/30">
+                    <td class="px-5 py-4">
+                        <p class="font-bold text-ims-bodyText">Sarah Doe</p>
+                        <p class="text-xs text-gray-500">sarah@example.com</p>
+                    </td>
+                    <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://via.placeholder.com/30" class="w-8 h-8 rounded border border-gray-200 object-cover">
+                            <div>
+                                <p class="font-bold text-ims-bodyText">Gold Chain 18k</p>
+                                <p class="text-[10px] text-gray-500">Order: #AUR-883111</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4 text-gray-600">Feb 16, 2026</td>
+                    <td class="px-5 py-4">
+                        <span class="bg-red-100 text-ims-danger text-xs px-2 py-1 rounded font-bold">36 Days</span>
+                        <p class="text-[10px] text-ims-danger mt-1">+6 days overdue</p>
+                    </td>
+                    <td class="px-5 py-4 font-bold text-ims-danger">₦1,200</td>
+                    <td class="px-5 py-4 text-right space-x-2">
+                        <button class="bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Send Email Reminder">
+                            <i class="fas fa-bell"></i> Remind
+                        </button>
+                        <button class="bg-ims-bodyText hover:bg-gray-800 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Mark Fees Paid & Release">
+                            Release
+                        </button>
+                    </td>
+                </tr>
+
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-4">
+                        <p class="font-bold text-ims-bodyText">Michael Chen</p>
+                        <p class="text-xs text-gray-500">mike@example.com</p>
+                    </td>
+                    <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <img src="https://via.placeholder.com/30" class="w-8 h-8 rounded border border-gray-200 object-cover">
+                            <div>
+                                <p class="font-bold text-ims-bodyText">Diamond Studs</p>
+                                <p class="text-[10px] text-gray-500">Order: #AUR-883900</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4 text-gray-600">Mar 10, 2026</td>
+                    <td class="px-5 py-4">
+                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded font-bold">14 Days</span>
+                    </td>
+                    <td class="px-5 py-4 font-bold text-ims-bodyText">₦0</td>
+                    <td class="px-5 py-4 text-right">
+                        <button class="bg-ims-bodyText hover:bg-gray-800 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Release to Shipping">
+                            Release
+                        </button>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

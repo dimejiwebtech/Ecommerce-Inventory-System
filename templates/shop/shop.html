@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if active_category %}{{ active_category.name }}{% else %}All Jewellery{% endif %} | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-shop-muted mb-6 flex items-center gap-2">
+        <a href="{% url 'home' %}" class="hover:text-shop-gold transition">Home</a>
+        <span>/</span>
+        <span>{% if active_category %}{{ active_category.name }}{% else %}Shop{% endif %}</span>
+    </nav>
+
+    <div class="flex gap-8">
+
+        <!-- Filter Sidebar -->
+        <aside class="hidden lg:block w-56 flex-shrink-0">
+            <form id="filter-form" hx-get="{% url 'shop_list' %}" hx-target="#product-grid" hx-trigger="change from:select, change from:input[type=checkbox]" hx-push-url="true">
+
+                <!-- Categories -->
+                <div class="mb-8">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-3">Category</h3>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'shop_list' %}" class="text-sm {% if not active_category %}text-shop-gold font-medium{% else %}text-shop-muted hover:text-shop-gold{% endif %} transition">All Jewellery</a>
+                        </li>
+                        {% for cat in categories %}
+                        <li>
+                            <a href="{% url 'shop_list' %}?category={{ cat.slug }}{% if current_sort %}&sort={{ current_sort }}{% endif %}"
+                               class="text-sm {% if active_category.slug == cat.slug %}text-shop-gold font-medium{% else %}text-shop-muted hover:text-shop-gold{% endif %} transition">
+                                {{ cat.name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Sort -->
+                <div class="mb-8">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-3">Sort By</h3>
+                    <select name="sort" class="w-full border border-shop-border text-sm px-3 py-2 focus:outline-none focus:border-shop-gold bg-white text-shop-text">
+                        <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Name</option>
+                        <option value="price_asc" {% if current_sort == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="price_desc" {% if current_sort == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                    </select>
+                </div>
+
+                <!-- In Stock -->
+                <div class="mb-8">
+                    <label class="flex items-center gap-2 text-sm text-shop-muted cursor-pointer">
+                        <input type="checkbox" name="in_stock" value="1" {% if current_filters.in_stock %}checked{% endif %} class="accent-shop-gold">
+                        In Stock Only
+                    </label>
+                </div>
+            </form>
+        </aside>
+
+        <!-- Product Grid -->
+        <div class="flex-1">
+            <!-- Header row -->
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="font-serif text-2xl md:text-3xl text-shop-text">
+                    {% if active_category %}{{ active_category.name }}{% else %}All Jewellery{% endif %}
+                </h1>
+                <p class="text-sm text-shop-muted">{{ products|length }} item{{ products|length|pluralize }}</p>
+            </div>
+
+            <!-- Mobile sort -->
+            <div class="flex gap-2 mb-6 lg:hidden overflow-x-auto pb-1">
+                {% for cat in categories %}
+                <a href="{% url 'shop_list' %}?category={{ cat.slug }}"
+                   class="flex-shrink-0 text-xs px-3 py-1.5 border transition
+                   {% if active_category.slug == cat.slug %}bg-shop-text text-white border-shop-text{% else %}border-shop-border text-shop-muted hover:border-shop-text{% endif %}">
+                    {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+
+            <div id="product-grid">
+                {% include 'shop/partials/product_grid.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

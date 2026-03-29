@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Receipt #POS-9921</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Optimize for 80mm thermal printers */
+        @media print {
+            body { width: 80mm; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+            .no-print { display: none; }
+        }
+        body { max-w-sm mx-auto font-mono text-xs text-black bg-white p-4 }
+    </style>
+</head>
+<body>
+    <div class="no-print mb-4 flex justify-between">
+        <button onclick="window.print()" class="bg-blue-600 text-white px-3 py-1 text-sm rounded">Print Receipt</button>
+        <a href="/ims/pos/interface" class="text-blue-600 text-sm underline">Back to POS</a>
+    </div>
+
+    <div class="text-center mb-4">
+        <h1 class="text-xl font-bold uppercase tracking-widest mb-1">AURA.</h1>
+        <p>14 Luxury Avenue, VI, Lagos</p>
+        <p>Tel: +234 801 234 5678</p>
+    </div>
+
+    <div class="border-b border-dashed border-gray-400 pb-2 mb-2">
+        <p>Receipt: #POS-9921</p>
+        <p>Date: 24/03/2026 14:35</p>
+        <p>Cashier: Admin (AD)</p>
+    </div>
+
+    <table class="w-full text-left mb-2">
+        <thead class="border-b border-dashed border-gray-400">
+            <tr>
+                <th class="py-1">Item</th>
+                <th class="py-1 text-center">Qty</th>
+                <th class="py-1 text-right">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="py-1 pr-2">Radiant Diamond Ring (AUR-8923)</td>
+                <td class="py-1 text-center">1</td>
+                <td class="py-1 text-right">450,000</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="border-t border-dashed border-gray-400 pt-2 mb-6 text-right">
+        <p class="font-bold text-sm">TOTAL: ₦450,000</p>
+        <p class="mt-1">Paid (Card): ₦450,000</p>
+    </div>
+
+    <div class="text-center text-[10px]">
+        <p>Thank you for shopping with us!</p>
+        <p>No refunds after 7 days.</p>
+        <p class="mt-2 text-gray-400">Powered by AURA IMS</p>
+    </div>
+</body>
+</html>

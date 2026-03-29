@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Account | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <!-- Main -->
+        <div class="flex-1 min-w-0">
+            <div class="mb-8">
+                <h1 class="font-serif text-2xl text-shop-text">Welcome back, {{ user.first_name|default:user.username }}!</h1>
+                <p class="text-shop-muted text-sm mt-1">From your dashboard you can view recent orders, manage your wishlist, and update your profile.</p>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
+                <div class="bg-white p-5 border border-shop-border flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold text-lg flex-shrink-0">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <div>
+                        <p class="text-shop-muted text-xs">Total Orders</p>
+                        <p class="text-xl font-semibold text-shop-text">{{ total_orders|default:"0" }}</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 border border-shop-border flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold text-lg flex-shrink-0">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <div>
+                        <p class="text-shop-muted text-xs">Processing</p>
+                        <p class="text-xl font-semibold text-shop-text">{{ active_orders|default:"0" }}</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 border border-shop-border flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold text-lg flex-shrink-0">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div>
+                        <p class="text-shop-muted text-xs">Wishlist</p>
+                        <p class="text-xl font-semibold text-shop-text">{{ wishlist_count|default:"0" }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="mb-10">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif text-xl text-shop-text">Recent Orders</h2>
+                    <a href="{% url 'accounts:order_list' %}" class="text-xs text-shop-gold hover:underline">View All →</a>
+                </div>
+
+                {% if orders %}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-shop-border text-xs text-shop-muted uppercase tracking-widest">
+                                <th class="text-left pb-3 font-medium">Order</th>
+                                <th class="text-left pb-3 font-medium">Date</th>
+                                <th class="text-left pb-3 font-medium">Status</th>
+                                <th class="text-right pb-3 font-medium">Total</th>
+                                <th class="text-right pb-3 font-medium"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-shop-border">
+                            {% for order in orders %}
+                            <tr class="hover:bg-shop-bg/50 transition">
+                                <td class="py-4 font-mono text-xs text-shop-text">#{{ order.order_number }}</td>
+                                <td class="py-4 text-shop-muted">{{ order.placed_at|date:"M d, Y" }}</td>
+                                <td class="py-4">
+                                    {% if order.status == 'pending' %}
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 bg-yellow-50 text-yellow-700 border border-yellow-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Pending
+                                    </span>
+                                    {% elif order.status == 'processing' %}
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> Processing
+                                    </span>
+                                    {% elif order.status == 'shipped' %}
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span> Shipped
+                                    </span>
+                                    {% elif order.status == 'delivered' %}
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 bg-green-50 text-green-700 border border-green-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Delivered
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 bg-gray-50 text-gray-600 border border-gray-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span> {{ order.get_status_display }}
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 text-right font-medium text-shop-text">₦{{ order.grand_total|floatformat:0 }}</td>
+                                <td class="py-4 text-right">
+                                    <a href="{% url 'accounts:order_detail' order.ref_id %}"
+                                       class="text-xs text-shop-gold hover:underline">View</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="py-10 text-center border border-shop-border bg-shop-bg/50">
+                    <i class="fas fa-box text-2xl text-shop-gold/30 mb-3 block"></i>
+                    <p class="text-shop-muted text-sm">You haven't placed any orders yet.</p>
+                    <a href="{% url 'shop_list' %}" class="inline-block mt-4 text-sm text-shop-gold hover:underline">Start Shopping →</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Wishlist Preview -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif text-xl text-shop-text">My Wishlist</h2>
+                    <a href="{% url 'accounts:wishlist' %}" class="text-xs text-shop-gold hover:underline">View All →</a>
+                </div>
+                {% if wishlist_items %}
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {% for item in wishlist_items %}
+                    <a href="{% url 'product_detail' item.jewellery.slug %}" class="group block border border-shop-border bg-white hover:border-shop-gold transition">
+                        <div class="aspect-square overflow-hidden">
+                            {% if item.jewellery.primary_image %}
+                            <img src="{{ item.jewellery.primary_image.image.url }}" alt="{{ item.jewellery.name }}"
+                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                                <i class="fas fa-gem text-2xl text-shop-gold/30"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-3">
+                            <p class="text-xs font-medium text-shop-text truncate">{{ item.jewellery.name }}</p>
+                            <p class="text-xs text-shop-muted mt-0.5">₦{{ item.jewellery.display_price|floatformat:0 }}</p>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="py-10 text-center border border-shop-border bg-shop-bg/50">
+                    <i class="far fa-heart text-2xl text-shop-gold/30 mb-3 block"></i>
+                    <p class="text-shop-muted text-sm">Your wishlist is empty.</p>
+                    <a href="{% url 'shop_list' %}" class="inline-block mt-4 text-sm text-shop-gold hover:underline">Browse Jewellery →</a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

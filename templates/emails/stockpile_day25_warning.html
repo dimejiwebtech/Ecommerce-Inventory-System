@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>AURA Stockpile Update</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #fdf8f2; margin: 0; padding: 40px 0; color: #1a1a1a;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e5e7eb; padding: 40px;">
+        
+        <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #c9a84c; padding-bottom: 20px;">
+            <h1 style="font-family: Georgia, serif; font-size: 28px; margin: 0; letter-spacing: 2px;">AURA<span style="color: #c9a84c;">.</span></h1>
+        </div>
+        
+        <p style="font-size: 16px; line-height: 1.6;">Dear {{ customer.first_name }},</p>
+        
+        <p style="font-size: 16px; line-height: 1.6;">This is a friendly reminder regarding your vaulted item(s) in the AURA Stockpile.</p>
+        
+        <div style="background-color: #fdf8f2; padding: 20px; border-left: 4px solid #d97706; margin: 30px 0;">
+            <p style="margin: 0; font-size: 15px; font-weight: bold;"><strong>Item:</strong> Radiant Diamond Ring</p>
+            <p style="margin: 5px 0 0 0; font-size: 15px;">Your 30 days of complimentary vault storage ends in exactly <strong>5 days</strong>.</p>
+        </div>
+
+        <p style="font-size: 16px; line-height: 1.6;">If the item is not released for shipping by <strong>{{ deadline_date }}</strong>, a standard vault maintenance fee of <strong>₦200 per day</strong> will begin accruing on the item.</p>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="https://yourdomain.com/stockpile/my_stockpile" style="background-color: #1a1a1a; color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Manage My Stockpile</a>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; text-align: center; font-size: 12px; color: #6b7280;">
+            <p>If you have any questions, reply to this email or contact our support team.</p>
+            <p>&copy; 2026 AURA Fine Jewellery. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

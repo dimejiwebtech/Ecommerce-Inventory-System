@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #AUR-883920 | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <div class="flex-1 min-w-0">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 border-b border-shop-border pb-6">
+                <div>
+                    <h1 class="font-serif text-3xl text-shop-text">Order #{{ order.order_number|default:order.ref_id|upper }}</h1>
+                    <p class="text-shop-muted mt-1">Placed on {{ order.placed_at|date:"F d, Y" }}</p>
+                </div>
+                <a href="{% url 'accounts:order_list' %}" class="text-shop-muted hover:text-shop-gold text-[10px] font-bold uppercase tracking-widest transition mt-4 sm:mt-0">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Orders
+                </a>
+            </div>
+
+            <div class="bg-white border border-shop-border p-8 mb-8">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-8">Order Status: {{ order.get_status_display|upper }}</h3>
+                <div class="relative flex items-center justify-between w-full max-w-2xl mx-auto">
+                    <div class="absolute left-0 top-1/2 transform -translate-y-1/2 w-full h-0.5 bg-shop-bg z-0"></div>
+                    {% with s=order.status %}
+                    <div class="absolute left-0 top-1/2 transform -translate-y-1/2 h-0.5 bg-shop-gold z-0 transition-all duration-500"
+                         style="width: {% if s == 'pending' %}0%{% elif s == 'processing' %}33.33%{% elif s == 'shipped' %}66.66%{% else %}100%{% endif %}"></div>
+                    
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-8 h-8 rounded-full {% if s == 'pending' or s == 'processing' or s == 'shipped' or s == 'delivered' %}bg-shop-gold text-white{% else %}bg-shop-bg border border-shop-border text-shop-muted{% endif %} flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-check text-[10px]"></i>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-tighter text-shop-text">Placed</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-8 h-8 rounded-full {% if s == 'processing' or s == 'shipped' or s == 'delivered' %}bg-shop-gold text-white{% else %}bg-shop-bg border border-shop-border text-shop-muted{% endif %} flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-box text-[10px]"></i>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-tighter text-shop-text">Processing</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-8 h-8 rounded-full {% if s == 'shipped' or s == 'delivered' %}bg-shop-gold text-white{% else %}bg-shop-bg border border-shop-border text-shop-muted{% endif %} flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-truck text-[10px]"></i>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-tighter text-shop-text">Shipped</span>
+                    </div>
+                    <div class="relative z-10 flex flex-col items-center">
+                        <div class="w-8 h-8 rounded-full {% if s == 'delivered' %}bg-shop-gold text-white{% else %}bg-shop-bg border border-shop-border text-shop-muted{% endif %} flex items-center justify-center mb-2 shadow-sm">
+                            <i class="fas fa-home text-[10px]"></i>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-tighter text-shop-text">Delivered</span>
+                    </div>
+                    {% endwith %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 bg-white border border-shop-border p-8">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-6 border-b border-shop-border pb-4">Items Ordered</h3>
+                    <div class="space-y-8">
+                        {% for item in order.items.all %}
+                        <div class="flex gap-6 items-center">
+                            <div class="w-20 h-24 bg-shop-bg flex-shrink-0 border border-shop-border overflow-hidden">
+                                {% if item.jewellery.primary_image %}
+                                <img src="{{ item.jewellery.primary_image.image.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center"><i class="fas fa-gem text-shop-gold/20"></i></div>
+                                {% endif %}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-serif text-lg text-shop-text uppercase tracking-wide">{{ item.jewellery_name }}</h4>
+                                <p class="text-[10px] text-shop-muted uppercase tracking-widest mt-1">SKU: {{ item.jewellery_sku }}</p>
+                                <p class="text-xs text-shop-muted mt-2">Quantity: {{ item.quantity }}</p>
+                            </div>
+                            <p class="font-bold text-shop-text">₦{{ item.unit_price }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-10 border-t border-shop-border pt-6 space-y-3">
+                        <div class="flex justify-between text-xs uppercase tracking-widest text-shop-muted"><span>Subtotal</span><span>₦{{ order.subtotal }}</span></div>
+                        {% if order.discount_amount > 0 %}
+                        <div class="flex justify-between text-xs uppercase tracking-widest text-red-500"><span>Discount</span><span>-₦{{ order.discount_amount }}</span></div>
+                        {% endif %}
+                        <div class="flex justify-between text-xs uppercase tracking-widest text-shop-muted"><span>Shipping</span><span>₦{{ order.shipping_fee }}</span></div>
+                        <div class="flex justify-between items-center font-bold text-shop-text text-xl pt-4 border-t border-shop-border mt-4">
+                            <span class="font-serif">Total</span>
+                            <span>₦{{ order.grand_total }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-8">
+                    <div class="bg-white border border-shop-border p-6">
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-4 border-b border-shop-border pb-2">Shipping Details</h3>
+                        {% with addr=order.shipping_address %}
+                        <p class="text-sm text-shop-text leading-relaxed font-medium mb-1">{{ addr.full_name }}</p>
+                        <p class="text-sm text-shop-muted leading-relaxed">
+                            {{ addr.address_line1 }}<br>
+                            {% if addr.address_line2 %}{{ addr.address_line2 }}<br>{% endif %}
+                            {{ addr.city }}, {{ addr.state }}<br>
+                            {{ addr.country }} {{ addr.postal_code }}<br>
+                            <span class="inline-block mt-2 font-bold text-shop-text text-xs italic">{{ addr.phone }}</span>
+                        </p>
+                        {% endwith %}
+                    </div>
+                    <div class="bg-white border border-shop-border p-6">
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-4 border-b border-shop-border pb-2">Payment Info</h3>
+                        <p class="text-sm text-shop-muted leading-relaxed">
+                            Method: {{ order.payment_method|default:"Paystack" }}<br>
+                            Status: <span class="{% if order.payment_status == 'paid' %}text-status-inStock{% else %}text-shop-gold{% endif %} font-bold uppercase text-[10px] tracking-widest ml-1">{{ order.payment_status|upper }}</span>
+                        </p>
+                    </div>
+                    {% if order.notes %}
+                    <div class="bg-shop-bg/30 border border-shop-border p-6">
+                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-shop-muted mb-2">Order Notes</h3>
+                        <p class="text-xs text-shop-text italic leading-relaxed">{{ order.notes }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

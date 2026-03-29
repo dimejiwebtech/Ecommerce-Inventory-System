@@ -1,0 +1,121 @@
+{% extends 'ims/base.html' %}
+{% load static %}
+
+{% block title %}Inventory Valuation | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Inventory Valuation</h1>
+        <p class="text-sm text-slate-500">Full breakdown of stock quantities, unit prices, and total asset valuations.</p>
+    </div>
+    <a href="?{% if search_q %}q={{ search_q }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}{% if current_stock %}stock={{ current_stock }}&{% endif %}export=csv"
+       class="bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-sm text-sm font-medium hover:bg-emerald-700 transition flex items-center gap-2 w-fit">
+        <i class="fas fa-file-csv"></i>Export CSV
+    </a>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total SKUs</p>
+        <p class="text-2xl font-black text-slate-800">{{ total_skus }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Units</p>
+        <p class="text-2xl font-black text-slate-800">{{ total_units|default:"0" }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Retail Value</p>
+        <p class="text-2xl font-black text-slate-800">₦{{ total_retail_value|floatformat:2 }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mb-1">Wholesale Value</p>
+        <p class="text-xl font-black text-slate-800">₦{{ total_wholesale_value|floatformat:2 }}</p>
+        <div class="flex gap-3 mt-2 text-[10px]">
+            <span class="text-amber-500 font-bold">{{ low_stock_count }} low stock</span>
+            <span class="text-rose-500 font-bold">{{ out_of_stock_count }} out of stock</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 mb-6">
+    <form method="get" class="flex flex-wrap items-end gap-4">
+        <div class="flex-1 min-w-[180px]">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Search</label>
+            <div class="relative">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input type="text" name="q" value="{{ search_q }}" placeholder="Product name or SKU..."
+                       class="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[var(--ims-accent)] bg-white">
+            </div>
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Category</label>
+            <select name="category" class="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[var(--ims-accent)] bg-white min-w-[150px]">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat.id }}" {% if current_category == cat.id|slugify %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Stock Status</label>
+            <select name="stock" class="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[var(--ims-accent)] bg-white min-w-[150px]">
+                <option value="">All Stock</option>
+                <option value="low" {% if current_stock == 'low' %}selected{% endif %}>Low Stock</option>
+                <option value="out" {% if current_stock == 'out' %}selected{% endif %}>Out of Stock</option>
+            </select>
+        </div>
+        <button type="submit" class="bg-[var(--ims-accent)] text-white px-6 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-sm">
+            <i class="fas fa-filter mr-1"></i>Filter
+        </button>
+    </form>
+</div>
+
+<!-- Products Table -->
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="text-slate-500 bg-slate-50 text-[10px] uppercase tracking-widest font-bold">
+                    <th class="px-6 py-4">SKU</th>
+                    <th class="px-6 py-4">Product</th>
+                    <th class="px-6 py-4">Category</th>
+                    <th class="px-6 py-4 text-center">Stock</th>
+                    <th class="px-6 py-4 text-right">Retail Price</th>
+                    <th class="px-6 py-4 text-right">Wholesale Price</th>
+                    <th class="px-6 py-4 text-right">Retail Value</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for product in products %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-3 font-mono text-xs text-slate-500">{{ product.sku }}</td>
+                    <td class="px-6 py-3 font-medium text-slate-700">{{ product.name }}</td>
+                    <td class="px-6 py-3 text-slate-500 text-xs">{{ product.category.name|default:"-" }}</td>
+                    <td class="px-6 py-3 text-center">
+                        {% if product.stock == 0 %}
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-rose-50 text-rose-600 border border-rose-100">Out</span>
+                        {% elif product.stock <= product.low_stock_threshold %}
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-amber-50 text-amber-600 border border-amber-100">{{ product.stock }}</span>
+                        {% else %}
+                        <span class="text-sm font-bold text-slate-800">{{ product.stock }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 text-right font-medium text-slate-700">₦{{ product.retail_price|floatformat:2 }}</td>
+                    <td class="px-6 py-3 text-right text-slate-500">₦{{ product.wholesale_price|floatformat:2 }}</td>
+                    <td class="px-6 py-3 text-right font-black text-slate-800">₦{{ product.retail_value|floatformat:2 }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-400">
+                        No products match your filters.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

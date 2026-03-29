@@ -1,0 +1,259 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout | AURA{% endblock %}
+
+{% block content %}
+{{ countries_list|json_script:"countries-data" }}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" x-data="checkoutApp()" x-init="init()" @htmx:after-swap.window="totalRefreshKey++">
+
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-shop-muted mb-8 flex items-center gap-2">
+        <a href="{% url 'home' %}" class="hover:text-shop-gold transition">Home</a>
+        <span>/</span>
+        <a href="{% url 'cart_detail' %}" class="hover:text-shop-gold transition">Cart</a>
+        <span>/</span>
+        <span>Checkout</span>
+    </nav>
+
+    <div class="flex flex-col-reverse lg:flex-row gap-12">
+
+        <!-- Left: Form -->
+        <div class="flex-1 lg:pr-12 lg:border-r border-shop-border">
+            <h1 class="font-serif text-3xl text-shop-text mb-8">Checkout</h1>
+
+            <form method="POST" action="{% url 'checkout' %}">
+                {% csrf_token %}
+
+                <!-- Contact -->
+                <section class="mb-10">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-5 pb-2 border-b border-shop-border">Contact Information</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs text-shop-muted mb-1">First Name *</label>
+                            <input type="text" name="first_name" value="{{ request.user.first_name }}" required
+                                   class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-shop-muted mb-1">Last Name *</label>
+                            <input type="text" name="last_name" value="{{ request.user.last_name }}" required
+                                   class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs text-shop-muted mb-1">Email Address *</label>
+                        <input type="email" name="email" value="{{ request.user.email }}" required
+                               class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-shop-muted mb-1">Phone Number *</label>
+                        <input type="tel" name="phone" placeholder="+234 800 000 0000" required
+                               class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                    </div>
+                </section>
+
+                <!-- Shipping Address -->
+                <section class="mb-10">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-5 pb-2 border-b border-shop-border">Shipping Address</h2>
+
+                    <!-- Country -->
+                    <div class="mb-4">
+                        <label class="block text-xs text-shop-muted mb-1">Country / Region *</label>
+                        <select name="country" x-model="country" @change="fetchStates()"
+                                class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold bg-white">
+                            <option value="">-- Select Country --</option>
+                            <template x-for="c in countries" :key="c.code">
+                                <option :value="c.code" x-text="c.name" :selected="c.code === country"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <!-- State / Province -->
+                    <div class="mb-4">
+                        <label class="block text-xs text-shop-muted mb-1">State / Province *</label>
+                        <template x-if="states.length > 0">
+                            <select name="state" x-model="state"
+                                    class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold bg-white">
+                                <option value="">-- Select State --</option>
+                                <template x-for="s in states" :key="s">
+                                    <option :value="s" x-text="s"></option>
+                                </template>
+                            </select>
+                        </template>
+                        <template x-if="states.length === 0">
+                            <input type="text" name="state" x-model="state" placeholder="State / Province / Region" required
+                                   class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold bg-white">
+                        </template>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs text-shop-muted mb-1">Address Line 1 *</label>
+                        <input type="text" name="address_line1" placeholder="Street address, P.O. box" required
+                               class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-xs text-shop-muted mb-1">Address Line 2</label>
+                        <input type="text" name="address_line2" placeholder="Apartment, suite, unit, etc. (optional)"
+                               class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs text-shop-muted mb-1">City *</label>
+                            <input type="text" name="city" required
+                                   class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-shop-muted mb-1">Postal / ZIP Code</label>
+                            <input type="text" name="postal_code"
+                                   class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition bg-white">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Coupon -->
+                <section class="mb-10">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-5 pb-2 border-b border-shop-border">Discount Code</h2>
+                    <div class="flex gap-3"
+                         hx-post="{% url 'apply_coupon' %}"
+                         hx-target="#coupon-result"
+                         hx-swap="innerHTML"
+                         hx-include="[name='coupon_code']"
+                         hx-trigger="click from:#apply-coupon-btn">
+                        {% csrf_token %}
+                        <input type="text" name="coupon_code" placeholder="Enter discount code"
+                               class="flex-1 border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition">
+                        <button id="apply-coupon-btn" type="button"
+                                class="bg-shop-text hover:bg-shop-gold text-white px-5 py-3 text-sm font-medium tracking-wide transition">
+                            Apply
+                        </button>
+                    </div>
+                    <div id="coupon-result" class="mt-2">
+                        {% if coupon %}
+                        <p class="text-sm text-green-600"><i class="fas fa-tag mr-1"></i> Coupon <strong>{{ coupon.code }}</strong> applied — ₦{{ discount|floatformat:0 }} off</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <!-- Payment Method -->
+                <section class="mb-10">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-5 pb-2 border-b border-shop-border">Payment Method</h2>
+                    <div class="border border-shop-gold bg-shop-gold/5 p-5">
+                        <label class="flex items-start gap-3 cursor-pointer">
+                            <input type="radio" name="payment_method" value="bank_transfer" checked
+                                   class="mt-1 accent-shop-gold">
+                            <div>
+                                <p class="font-semibold text-shop-text text-sm">Manual Bank Transfer</p>
+                                <p class="text-xs text-shop-muted mt-1">Transfer to the account below and your order will be confirmed within 24 hours:</p>
+                                <div class="mt-3 bg-white border border-shop-border p-4 space-y-1.5 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-shop-muted">Bank</span>
+                                        <span class="font-medium text-shop-text">First Bank of Nigeria</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-shop-muted">Account Name</span>
+                                        <span class="font-medium text-shop-text">AURA Jewellery Ltd</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-shop-muted">Account Number</span>
+                                        <span class="font-medium text-shop-text font-mono tracking-wider">3012345678</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-shop-muted">Amount</span>
+                                        <span class="font-bold text-shop-gold text-base">₦{{ grand_total|floatformat:0 }}</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-shop-muted mt-3">
+                                    <i class="fas fa-info-circle mr-1 text-shop-gold"></i>
+                                    Use your Order Number as the payment reference. Once confirmed, you'll receive an email notification.
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- Notes -->
+                <section class="mb-10">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-5 pb-2 border-b border-shop-border">Order Notes <span class="text-shop-muted font-normal normal-case tracking-normal">(optional)</span></h2>
+                    <textarea name="notes" rows="3" placeholder="Special instructions for your order..."
+                              class="w-full border border-shop-border px-4 py-3 text-sm focus:outline-none focus:border-shop-gold transition resize-none"></textarea>
+                </section>
+
+                <button type="submit"
+                        class="w-full bg-shop-text hover:bg-shop-gold text-white py-4 font-medium text-base tracking-wide transition">
+                    <span x-text="'Place Order &mdash; ₦' + finalTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})">
+                        Place Order &mdash; ₦{{ grand_total|floatformat:2 }}
+                    </span>
+                </button>
+                <p class="text-xs text-shop-muted text-center mt-3">
+                    <i class="fas fa-shield-alt mr-1"></i> Your order is protected. We'll confirm after payment verification.
+                </p>
+            </form>
+        </div>
+
+        <!-- Right: Summary -->
+        <div class="w-full lg:w-[400px] flex-shrink-0">
+            {% include 'orders/partials/checkout_summary.html' %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function checkoutApp() {
+    return {
+        country: 'NG',
+        state: '',
+        shippingMethod: '',
+        countries: JSON.parse(document.getElementById('countries-data').textContent),
+        states: [],
+        totalRefreshKey: 0,
+
+        get rawSubtotal() {
+            this.totalRefreshKey;
+            const raw = document.getElementById('checkout-raw-subtotal');
+            return raw ? parseInt(raw.innerText) || 0 : 0;
+        },
+
+        get shippingFee() {
+            if (this.country !== 'NG' || !this.state) return 0;
+            switch(this.shippingMethod) {
+                case 'agbowa': return 5200;
+                case 'badagry': return 4300;
+                case 'ibeju': return 4300;
+                case 'others': return 5000;
+                default: return 0;
+            }
+        },
+
+        get finalTotal() {
+            return this.rawSubtotal + this.shippingFee;
+        },
+
+        async init() {
+            await this.fetchStates();
+        },
+
+        async fetchStates() {
+            this.states = [];
+
+            if (!this.country) return;
+            try {
+                const res = await fetch('https://countriesnow.space/api/v0.1/countries/states', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({iso2: this.country})
+                });
+                const data = await res.json();
+                if (data.data && data.data.states) {
+                    this.states = data.data.states.map(s => s.name);
+                }
+            } catch(e) {
+                this.states = [];
+            }
+        }
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Signed Out | AURA{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-shop-bg flex items-center justify-center py-16 px-4 text-center">
+    <div class="w-full max-w-md bg-white border border-shop-border p-8 sm:p-10">
+        <div class="mb-8">
+            <a href="/" class="font-serif text-3xl font-bold text-shop-text">AURA<span class="text-shop-gold">.</span></a>
+            <h2 class="text-xl font-bold text-shop-text mt-6">You've been signed out</h2>
+            <p class="text-shop-muted text-sm mt-2">Thank you for visiting. See you again soon!</p>
+        </div>
+
+        <div class="space-y-4">
+            <a href="{% url 'accounts:login' %}" 
+               class="block w-full bg-shop-text hover:bg-shop-gold text-white py-4 font-medium tracking-wide transition text-sm">
+                Sign Back In
+            </a>
+            <a href="{% url 'home' %}" 
+               class="block w-full border border-shop-border text-shop-text hover:bg-shop-bg py-4 font-medium tracking-wide transition text-sm">
+                Return to Shop
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<div class="space-y-6">
+    <div>
+        <h3 class="font-bold text-xs uppercase tracking-widest text-shop-text mb-3">Category</h3>
+        <div class="space-y-2">
+            <label class="flex items-center gap-2 text-sm text-shop-muted cursor-pointer hover:text-shop-gold">
+                <input type="radio" name="category" value="" class="accent-shop-gold"> All
+            </label>
+            {% for cat in categories %}
+            <label class="flex items-center gap-2 text-sm text-shop-muted cursor-pointer hover:text-shop-gold">
+                <input type="radio" name="category" value="{{ cat.slug }}"
+                       class="accent-shop-gold"
+                       {% if selected_category == cat.slug %}checked{% endif %}>
+                {{ cat.name }}
+            </label>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="border-t border-shop-border pt-6">
+        <h3 class="font-bold text-xs uppercase tracking-widest text-shop-text mb-3">Price Range</h3>
+        <div class="flex gap-2 items-center">
+            <input type="number" name="min_price" placeholder="Min"
+                   class="w-full border border-shop-border px-3 py-2 text-sm focus:outline-none focus:border-shop-gold bg-transparent">
+            <span class="text-shop-muted">—</span>
+            <input type="number" name="max_price" placeholder="Max"
+                   class="w-full border border-shop-border px-3 py-2 text-sm focus:outline-none focus:border-shop-gold bg-transparent">
+        </div>
+    </div>
+
+    <div class="border-t border-shop-border pt-6">
+        <button type="submit"
+                class="w-full bg-shop-text text-white py-2 text-sm font-medium tracking-wide hover:bg-shop-gold transition">
+            Apply Filters
+        </button>
+        <a href="{% url 'shop_list' %}"
+           class="block text-center mt-2 text-xs text-shop-muted hover:text-shop-gold">Clear all</a>
+    </div>
+</div>

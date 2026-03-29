@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Order History | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <div class="flex-1 min-w-0">
+            <h1 class="font-serif text-2xl text-shop-text mb-8">Order History</h1>
+            
+            <div class="bg-white border border-shop-border overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-shop-bg text-shop-muted border-b border-shop-border">
+                            <tr>
+                                <th class="px-6 py-4 font-medium uppercase tracking-widest text-[10px]">Order Ref</th>
+                                <th class="px-6 py-4 font-medium uppercase tracking-widest text-[10px]">Date</th>
+                                <th class="px-6 py-4 font-medium uppercase tracking-widest text-[10px]">Status</th>
+                                <th class="px-6 py-4 font-medium uppercase tracking-widest text-[10px]">Total</th>
+                                <th class="px-6 py-4 font-medium uppercase tracking-widest text-[10px] text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-shop-border">
+                            {% for order in orders %}
+                            <tr class="hover:bg-shop-bg/50 transition">
+                                <td class="px-6 py-4 font-medium text-shop-text">#{{ order.order_number|default:order.ref_id|truncatechars:10|upper }}</td>
+                                <td class="px-6 py-4 text-shop-muted">{{ order.placed_at|date:"M d, Y" }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="{% if order.status == 'delivered' %}bg-status-inStock/10 text-status-inStock{% else %}bg-shop-gold/10 text-shop-gold{% endif %} px-2 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border border-current/20">
+                                        {{ order.get_status_display|default:order.status }}
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-shop-text font-bold">₦{{ order.grand_total|default:order.total_amount }}</td>
+                                <td class="px-6 py-4 text-right">
+                                    <a href="{% url 'accounts:order_detail' order.ref_id %}" class="text-shop-text hover:text-shop-gold font-bold text-[10px] uppercase tracking-widest underline decoration-shop-gold/30 underline-offset-4">View Details</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-shop-muted italic bg-shop-bg/20">
+                                    You haven't placed any orders yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

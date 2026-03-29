@@ -1,0 +1,7 @@
+{% if error %}
+<p class="text-red-500 text-sm mt-2">{{ error }}</p>
+{% else %}
+<p class="text-status-inStock text-sm mt-2 font-medium">
+    ✓ Coupon applied — ₦{{ discount|floatformat:0 }} off
+</p>
+{% endif %}

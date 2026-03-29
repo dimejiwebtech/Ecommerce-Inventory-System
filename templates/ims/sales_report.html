@@ -1,0 +1,134 @@
+{% extends 'ims/base.html' %}
+{% load static %}
+
+{% block title %}Sales Report | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Sales Report</h1>
+        <p class="text-sm text-slate-500">Comprehensive overview of online and POS sales performance.</p>
+    </div>
+    <a href="?date_from={{ date_from|date:'Y-m-d' }}&date_to={{ date_to|date:'Y-m-d' }}&export=csv"
+       class="bg-emerald-600 text-white px-4 py-2 rounded-lg shadow-sm text-sm font-medium hover:bg-emerald-700 transition flex items-center gap-2 w-fit">
+        <i class="fas fa-file-csv"></i>Export CSV
+    </a>
+</div>
+
+<!-- Date Filter -->
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5 mb-6">
+    <form method="get" class="flex flex-wrap items-end gap-4">
+        <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">From</label>
+            <input type="date" name="date_from" value="{{ date_from|date:'Y-m-d' }}"
+                   class="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[var(--ims-accent)] bg-white">
+        </div>
+        <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">To</label>
+            <input type="date" name="date_to" value="{{ date_to|date:'Y-m-d' }}"
+                   class="border border-slate-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[var(--ims-accent)] bg-white">
+        </div>
+        <button type="submit"
+                class="bg-[var(--ims-accent)] text-white px-6 py-2 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-sm">
+            <i class="fas fa-filter mr-1"></i>Apply
+        </button>
+    </form>
+</div>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Revenue</p>
+        <p class="text-2xl font-black text-slate-800">₦{{ total_revenue|floatformat:2 }}</p>
+        <p class="text-[10px] text-slate-400 mt-1">Online + POS combined</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Transactions</p>
+        <p class="text-2xl font-black text-slate-800">{{ total_transactions }}</p>
+        <p class="text-[10px] text-slate-400 mt-1">{{ online_count }} online · {{ pos_count }} POS</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Avg. Order Value</p>
+        <p class="text-2xl font-black text-slate-800">₦{{ avg_order_value|floatformat:2 }}</p>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+        <p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Online Revenue</p>
+        <p class="text-xl font-black text-slate-800">₦{{ online_revenue|floatformat:2 }}</p>
+        <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest mt-2 mb-1">POS Revenue</p>
+        <p class="text-xl font-black text-slate-800">₦{{ pos_revenue|floatformat:2 }}</p>
+    </div>
+</div>
+
+<!-- Two Column: Top Products + Orders Table -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+    <!-- Top Selling Products -->
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden xl:col-span-1">
+        <div class="px-6 py-4 border-b border-slate-50 bg-slate-50/50">
+            <h3 class="font-bold text-sm text-slate-700"><i class="fas fa-trophy text-amber-500 mr-2"></i>Top Selling Products</h3>
+        </div>
+        <div class="divide-y divide-slate-50">
+            {% for p in top_products %}
+            <div class="px-6 py-3 flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-slate-700">{{ p.jewellery_name }}</p>
+                    <p class="text-[10px] text-slate-400 font-mono">{{ p.jewellery_sku }}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-black text-slate-800">{{ p.units_sold }} units</p>
+                    <p class="text-[10px] text-emerald-500 font-bold">₦{{ p.revenue|floatformat:0 }}</p>
+                </div>
+            </div>
+            {% empty %}
+            <div class="px-6 py-8 text-center text-sm text-slate-400">No sales data found for this period.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden xl:col-span-2">
+        <div class="px-6 py-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+            <h3 class="font-bold text-sm text-slate-700"><i class="fas fa-receipt text-[var(--ims-accent)] mr-2"></i>Orders in Period</h3>
+            <span class="text-xs text-slate-400">Showing up to 50 latest</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left">
+                <thead>
+                    <tr class="text-slate-500 bg-slate-50 text-[10px] uppercase tracking-widest font-bold">
+                        <th class="px-6 py-3">Order #</th>
+                        <th class="px-6 py-3">Customer</th>
+                        <th class="px-6 py-3">Status</th>
+                        <th class="px-6 py-3 text-right">Grand Total</th>
+                        <th class="px-6 py-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for order in recent_orders %}
+                    <tr class="hover:bg-slate-50/50 transition">
+                        <td class="px-6 py-3 font-mono font-bold text-slate-700">{{ order.order_number }}</td>
+                        <td class="px-6 py-3 text-slate-600">{{ order.customer_name }}</td>
+                        <td class="px-6 py-3">
+                            <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter
+                                {% if order.status == 'delivered' %}bg-emerald-50 text-emerald-600 border border-emerald-100
+                                {% elif order.status == 'shipped' %}bg-blue-50 text-blue-600 border border-blue-100
+                                {% elif order.status == 'processing' %}bg-amber-50 text-amber-600 border border-amber-100
+                                {% elif order.status == 'cancelled' %}bg-rose-50 text-rose-600 border border-rose-100
+                                {% else %}bg-slate-100 text-slate-500 border border-slate-200{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-3 text-right font-black text-slate-800">₦{{ order.grand_total|floatformat:2 }}</td>
+                        <td class="px-6 py-3 text-xs text-slate-500">{{ order.placed_at|date:"M d, Y" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-sm text-slate-400">
+                            No orders found for this date range.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

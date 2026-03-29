@@ -1,0 +1,64 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}{{ title }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+        <p class="text-sm text-slate-500">Add size or material variations to an existing jewellery product.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_variant_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Variations
+    </a>
+</div>
+
+<div class="max-w-4xl">
+    <form method="post" enctype="multipart/form-data" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm space-y-6">
+            <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fas fa-cubes opacity-30"></i> Variation Details
+            </h3>
+            
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Base Product</label>
+                {{ form.jewellery }}
+                {% if form.jewellery.errors %}<p class="text-red-500 text-[10px] mt-1">{{ form.jewellery.errors.0 }}</p>{% endif %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Size (e.g., 7, 52, O)</label>
+                    {{ form.size }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Color / Material (e.g., Rose Gold)</label>
+                    {{ form.color }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-50">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Available Stock</label>
+                    {{ form.stock }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Variant-Specific Image (Optional)</label>
+                    {{ form.image }}
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button type="submit" class="bg-slate-800 text-white px-8 py-3 rounded-lg font-bold text-sm hover:bg-slate-900 transition shadow-lg">
+                Save Variation
+            </button>
+            <a href="{% url 'catalogue:ims_variant_list' %}" class="text-slate-500 text-xs font-bold uppercase tracking-widest hover:text-slate-800 transition">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

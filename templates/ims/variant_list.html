@@ -1,0 +1,74 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Product Variations | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Product Variations</h1>
+        <p class="text-sm text-gray-500 mt-1">Manage sizes, colors, and specific stock for jewellery pieces.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_variant_add' %}" class="bg-ims-accent hover:bg-green-600 text-white px-4 py-2 rounded shadow-sm text-sm font-medium transition flex items-center gap-2">
+        <i class="fas fa-plus"></i> Add Variation
+    </a>
+</div>
+
+<div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-gray-50 text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="px-5 py-3 font-medium">Base Product</th>
+                    <th class="px-5 py-3 font-medium">Size</th>
+                    <th class="px-5 py-3 font-medium">Color/Material</th>
+                    <th class="px-5 py-3 font-medium">Stock</th>
+                    <th class="px-5 py-3 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for variant in variants %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-3">
+                        <div class="flex items-center gap-3">
+                            {% if variant.image %}
+                            <img src="{{ variant.image.url }}" class="w-8 h-8 rounded object-cover border border-gray-100">
+                            {% else %}
+                            <div class="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-[10px]">
+                                <i class="fas fa-image"></i>
+                            </div>
+                            {% endif %}
+                            <span class="font-bold text-ims-bodyText">{{ variant.jewellery.name }}</span>
+                        </div>
+                    </td>
+                    <td class="px-5 py-3 text-gray-600 font-medium">{{ variant.size|default:"—" }}</td>
+                    <td class="px-5 py-3 text-gray-600">{{ variant.color|default:"—" }}</td>
+                    <td class="px-5 py-3">
+                        <span class="{% if variant.stock <= variant.jewellery.low_stock_threshold %}text-ims-danger font-bold{% else %}text-gray-600{% endif %}">
+                            {{ variant.stock }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3 text-right space-x-3">
+                        <a href="{% url 'catalogue:ims_variant_edit' variant.pk %}" class="text-blue-600 hover:text-blue-800 font-medium hover:underline text-xs">Edit</a>
+                        <form action="{% url 'catalogue:ims_variant_delete' variant.pk %}" method="POST" class="inline" onsubmit="return confirm('Delete this variation?');">
+                            {% csrf_token %}
+                            <button type="submit" class="text-ims-danger hover:text-red-800 font-medium hover:underline text-xs">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-5 py-10 text-center text-gray-500 italic">No variations found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bottom Add Button -->
+    <div class="p-6 border-t border-gray-200 bg-gray-50/50 flex justify-center">
+        <a href="{% url 'catalogue:ims_variant_add' %}" class="inline-flex items-center gap-2 bg-[var(--ims-accent)] text-white px-6 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-md">
+            <i class="fas fa-plus"></i> Add New Variation
+        </a>
+    </div>
+</div>
+{% endblock %}

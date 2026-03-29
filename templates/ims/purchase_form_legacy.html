@@ -1,0 +1,67 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+    <div class="mb-6 flex items-center gap-4">
+        <a href="/ims/purchases" class="text-gray-400 hover:text-ims-bodyText"><i class="fas fa-arrow-left"></i></a>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Create Purchase Order</h1>
+    </div>
+
+    <form class="space-y-6">
+        <div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Select Vendor</label>
+                    <select required class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none bg-white">
+                        <option value="" disabled selected>Choose a vendor...</option>
+                        <option>Dubai Gold Wholesalers LLC</option>
+                        <option>Antwerp Diamond Exchange</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Expected Delivery Date</label>
+                    <input type="date" required class="w-full border border-gray-300 rounded px-4 py-2 focus:ring-1 focus:ring-ims-accent outline-none">
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm p-6" x-data="{ items: [{product: '', qty: 1, cost: 0}] }">
+            <h2 class="text-lg font-bold text-ims-bodyText mb-4 border-b border-gray-100 pb-2">Order Items</h2>
+            
+            <table class="w-full text-left text-sm mb-4">
+                <thead class="text-gray-500 pb-2 block">
+                    <tr class="flex gap-4">
+                        <th class="flex-1 font-medium">Product (SKU)</th>
+                        <th class="w-24 font-medium text-center">Qty</th>
+                        <th class="w-32 font-medium text-right">Unit Cost (₦)</th>
+                        <th class="w-10"></th>
+                    </tr>
+                </thead>
+                <tbody class="space-y-2 block">
+                    <template x-for="(item, index) in items" :key="index">
+                        <tr class="flex gap-4 items-center">
+                            <td class="flex-1">
+                                <select class="w-full border border-gray-300 rounded px-3 py-2 bg-white">
+                                    <option>Radiant Diamond Ring (AUR-8923)</option>
+                                    <option>Gold Chain 18k (AUR-1122)</option>
+                                </select>
+                            </td>
+                            <td class="w-24"><input type="number" x-model="item.qty" class="w-full border border-gray-300 rounded px-3 py-2 text-center"></td>
+                            <td class="w-32"><input type="number" x-model="item.cost" class="w-full border border-gray-300 rounded px-3 py-2 text-right"></td>
+                            <td class="w-10 text-center">
+                                <button type="button" @click="items.splice(index, 1)" class="text-gray-400 hover:text-ims-danger"><i class="fas fa-trash"></i></button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            
+            <button type="button" @click="items.push({product: '', qty: 1, cost: 0})" class="text-sm text-ims-accent font-medium hover:underline"><i class="fas fa-plus mr-1"></i> Add Another Item</button>
+        </div>
+
+        <div class="flex justify-end gap-4">
+            <button type="submit" class="px-6 py-2 bg-ims-bodyText hover:bg-gray-800 text-white rounded font-medium transition shadow-sm">Generate PO</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

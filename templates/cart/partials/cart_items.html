@@ -1,0 +1,57 @@
+{% if cart.items.all %}
+{% for item in cart.items.all %}
+<div class="flex items-start gap-4 py-4 border-b border-shop-border" id="cart-item-{{ item.id }}">
+    {% with img=item.jewellery.primary_image %}
+    {% if img %}
+        <img src="{{ img.image.url }}" alt="{{ item.jewellery.name }}"
+             class="w-20 h-20 object-cover border border-shop-border flex-shrink-0">
+    {% else %}
+        <div class="w-20 h-20 bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-gem text-shop-muted"></i>
+        </div>
+    {% endif %}
+    {% endwith %}
+    <div class="flex-1 min-w-0">
+        <h4 class="font-serif text-base text-shop-text truncate">{{ item.jewellery.name }}</h4>
+        <p class="text-xs text-shop-muted mb-2">
+            SKU: {{ item.jewellery.sku }}
+            {% if item.variant %}
+                | <span class="font-medium">
+                    {% if item.variant.size %}Size: {{ item.variant.size }}{% endif %}
+                    {% if item.variant.size and item.variant.color %} / {% endif %}
+                    {% if item.variant.color %}Color: {{ item.variant.color }}{% endif %}
+                </span>
+            {% endif %}
+        </p>
+        <div class="flex items-center gap-3">
+            <form hx-post="{% url 'update_cart' item.id %}"
+                  hx-target="#cart-items"
+                  hx-swap="innerHTML"
+                  hx-trigger="change"
+                  hx-on::after-request="htmx.ajax('GET', '{% url 'cart_detail' %}?partial=summary', {target:'#cart-summary', swap:'innerHTML'})"
+                  class="flex items-center border border-shop-border">
+                {% csrf_token %}
+                <button type="button" onclick="this.nextElementSibling.stepDown(); this.form.dispatchEvent(new Event('change'))"
+                        class="px-2 text-shop-muted hover:text-shop-text transition">−</button>
+                <input type="number" name="quantity" value="{{ item.quantity }}" min="1"
+                       class="w-10 text-center text-sm py-1 bg-transparent focus:outline-none">
+                <button type="button" onclick="this.previousElementSibling.stepUp(); this.form.dispatchEvent(new Event('change'))"
+                        class="px-2 text-shop-muted hover:text-shop-text transition">+</button>
+            </form>
+            <button hx-post="{% url 'remove_from_cart' item.id %}"
+                    hx-target="#cart-items"
+                    hx-swap="innerHTML"
+                    hx-on::after-request="htmx.ajax('GET', '{% url 'cart_detail' %}?partial=summary', {target:'#cart-summary', swap:'innerHTML'})"
+                    class="text-shop-muted hover:text-red-500 text-xs transition">
+                Remove
+            </button>
+        </div>
+    </div>
+    <p class="text-sm font-medium text-shop-text flex-shrink-0">
+        ₦{{ item.line_total|floatformat:0 }}
+    </p>
+</div>
+{% endfor %}
+{% else %}
+<p class="text-center py-12 text-shop-muted text-sm">Your cart is empty.</p>
+{% endif %}

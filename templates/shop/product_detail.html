@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="text-xs text-shop-muted mb-8 flex items-center gap-2">
+        <a href="{% url 'home' %}" class="hover:text-shop-gold transition">Home</a>
+        <span>/</span>
+        <a href="{% url 'shop_list' %}" class="hover:text-shop-gold transition">Shop</a>
+        {% if product.category %}
+        <span>/</span>
+        <a href="{% url 'shop_list' %}?category={{ product.category.slug }}" class="hover:text-shop-gold transition">{{ product.category.name }}</a>
+        {% endif %}
+        <span>/</span>
+        <span class="text-shop-text">{{ product.name }}</span>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 mb-20">
+
+        <!-- Images -->
+        <div x-data="{ activeImg: '{% if product.primary_image %}{{ product.primary_image.image.url }}{% endif %}' }">
+            <div class="aspect-square bg-white border border-shop-border overflow-hidden mb-3">
+                {% if product.primary_image %}
+                <img :src="activeImg" alt="{{ product.name }}"
+                     class="w-full h-full object-cover"
+                     src="{{ product.primary_image.image.url }}">
+                {% else %}
+                <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                    <i class="fas fa-gem text-6xl text-shop-gold/30"></i>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if images.count > 1 %}
+            <div class="grid grid-cols-5 gap-2">
+                {% for img in images %}
+                <button @click="activeImg = '{{ img.image.url }}'"
+                        class="aspect-square overflow-hidden border border-shop-border hover:border-shop-gold transition">
+                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}"
+                         class="w-full h-full object-cover">
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Details -->
+        <div class="flex flex-col">
+            <p class="text-xs uppercase tracking-widest text-shop-muted mb-2">
+                {{ product.category.name }}{% if product.collection %} · {{ product.collection.name }}{% endif %}
+            </p>
+            <h1 class="font-serif text-3xl md:text-4xl text-shop-text mb-3 leading-tight">{{ product.name }}</h1>
+
+            <!-- Price -->
+            <div class="mb-5">
+                <p class="text-2xl font-semibold text-shop-text">₦{{ display_price|floatformat:0 }}</p>
+                <p class="text-xs text-shop-muted mt-0.5">SKU: {{ product.sku }} {% if product.weight_grams %}· {{ product.weight_grams }}g{% endif %}</p>
+                {% if request.user.is_authenticated and request.user.role == 'wholesaler' %}
+                <p class="text-xs text-green-600 mt-1 font-medium">✓ Wholesale pricing applied</p>
+                {% endif %}
+            </div>
+
+            <!-- Stock badge -->
+            <div class="mb-5">
+                {% if product.stock_status == 'in_stock' %}
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 px-3 py-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> In Stock
+                </span>
+                {% elif product.stock_status == 'low_stock' %}
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-yellow-700 bg-yellow-50 border border-yellow-200 px-3 py-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Only {{ product.stock }} left
+                </span>
+                {% else %}
+                <span class="inline-flex items-center gap-1.5 text-xs font-medium text-red-700 bg-red-50 border border-red-200 px-3 py-1.5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Out of Stock
+                </span>
+                {% endif %}
+            </div>
+
+            <!-- Add to Cart / Variants -->
+            {% if product.stock > 0 or variants %}
+            <form hx-post="{% url 'cart_add' %}" hx-target="#cart-count" hx-swap="outerHTML"
+                  class="mb-5" x-data="{ qty: 1, variantId: '' }">
+                {% csrf_token %}
+                <input type="hidden" name="jewellery_id" value="{{ product.id }}">
+                <input type="hidden" name="variant_id" x-model="variantId">
+                
+                {% if variants %}
+                <div class="mb-5 space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Select Variant (Size / Color)</label>
+                        <select x-model="variantId" required class="w-full border border-shop-border p-3 text-sm focus:outline-none focus:border-shop-gold bg-transparent">
+                            <option value="">-- Choose an option --</option>
+                            {% for v in variants %}
+                                <option value="{{ v.id }}" {% if v.stock <= 0 %}disabled{% endif %}>
+                                    {% if v.size %}Size {{ v.size }}{% endif %}
+                                    {% if v.size and v.color %} - {% endif %}
+                                    {% if v.color %}{{ v.color }}{% endif %}
+                                    {% if v.stock <= 0 %} (Out of Stock){% else %} ({{ v.stock }} left){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="flex gap-3">
+                    <div class="flex border border-shop-border">
+                        <button type="button" @click="qty = Math.max(1, qty - 1)"
+                                class="px-3 text-shop-muted hover:text-shop-text transition">−</button>
+                        <input type="number" name="quantity" x-model="qty" min="1" max="99"
+                               class="w-12 text-center text-sm focus:outline-none">
+                        <button type="button" @click="qty = qty + 1"
+                                class="px-3 text-shop-muted hover:text-shop-text transition">+</button>
+                    </div>
+                    <button type="submit" 
+                            {% if variants %} :disabled="!variantId" {% endif %}
+                            class="flex-1 bg-shop-text hover:bg-shop-gold text-white py-3 text-sm font-medium tracking-wide transition text-center disabled:opacity-50 disabled:cursor-not-allowed">
+                        Add to Cart
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <button disabled class="w-full bg-gray-200 text-gray-500 py-3 text-sm font-medium tracking-wide mb-5">Out of Stock</button>
+            {% endif %}
+
+            <!-- Wishlist -->
+            <form hx-post="{% url 'wishlist_toggle' %}" hx-target="#wishlist-btn-{{ product.id }}" hx-swap="outerHTML" class="mb-8">
+                {% csrf_token %}
+                <input type="hidden" name="jewellery_id" value="{{ product.id }}">
+                <button id="wishlist-btn-{{ product.id }}" type="submit"
+                        class="flex items-center gap-2 text-sm text-shop-muted hover:text-shop-gold transition">
+                    <i class="{% if wished %}fas text-shop-gold{% else %}far{% endif %} fa-heart"></i>
+                    {% if wished %}Remove from Wishlist{% else %}Add to Wishlist{% endif %}
+                </button>
+            </form>
+
+            <!-- Description -->
+            <div class="border-t border-shop-border pt-6">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-shop-text mb-3">Description</h2>
+                <div class="prose prose-sm text-shop-muted leading-relaxed max-w-none">
+                    {{ product.description|safe }}
+                </div>
+            </div>
+
+            <!-- Trust badges -->
+            <div class="mt-6 pt-6 border-t border-shop-border grid grid-cols-3 gap-4 text-center">
+                <div>
+                    <i class="fas fa-shield-alt text-shop-gold mb-1 block"></i>
+                    <p class="text-[10px] text-shop-muted">Authenticity Guaranteed</p>
+                </div>
+                <div>
+                    <i class="fas fa-truck text-shop-gold mb-1 block"></i>
+                    <p class="text-[10px] text-shop-muted">Fast Discreet Shipping</p>
+                </div>
+                <div>
+                    <i class="fas fa-undo text-shop-gold mb-1 block"></i>
+                    <p class="text-[10px] text-shop-muted">Easy Returns</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div id="reviews" class="border-t border-shop-border pt-12 mt-12 mb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Review List -->
+            <div class="lg:col-span-2">
+                <h2 class="font-serif text-2xl text-shop-text mb-8">Customer Reviews ({{ reviews|length }})</h2>
+                
+                {% if reviews %}
+                <div class="space-y-8">
+                    {% for review in reviews %}
+                    <div class="border-b border-shop-border pb-8">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="font-bold text-sm text-shop-text">{{ review.user.username }}</p>
+                            <div class="flex text-shop-gold text-[10px] gap-0.5">
+                                {% for i in "12345" %}
+                                <i class="{% if forloop.counter <= review.rating %}fas{% else %}far{% endif %} fa-star"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-shop-muted mb-3 italic tracking-wide uppercase">{{ review.created_at|date:"F d, Y" }}</p>
+                        <p class="text-sm text-shop-muted leading-relaxed font-light">{{ review.comment }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="py-10 bg-gray-50/30 border border-dashed border-shop-border text-center">
+                    <p class="text-shop-muted text-sm italic">No reviews yet. Be the first to share your thoughts!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Review Form -->
+            <div class="bg-gray-50/50 p-8 border border-shop-border self-start">
+                <h3 class="font-serif text-xl text-shop-text mb-6">Write a Review</h3>
+                {% if request.user.is_authenticated %}
+                <form method="post" class="space-y-5">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-shop-text mb-3">Rating</label>
+                        <div class="flex gap-2 text-shop-gold text-xl" x-data="{ hover: 0, rating: 0 }">
+                            <input type="hidden" name="rating" :value="rating" required>
+                            {% for i in "12345" %}
+                            <button type="button" 
+                                    @mouseover="hover = {{ forloop.counter }}" 
+                                    @mouseleave="hover = 0" 
+                                    @click="rating = {{ forloop.counter }}"
+                                    class="focus:outline-none transition-transform hover:scale-110">
+                                <i class="fa-star" :class="(hover || rating) >= {{ forloop.counter }} ? 'fas' : 'far'"></i>
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest text-shop-text mb-3">Your Thoughts</label>
+                        <textarea name="comment" rows="4" required
+                                  placeholder="What did you think of this piece?"
+                                  class="w-full border border-shop-border p-4 text-sm focus:outline-none focus:border-shop-gold bg-white transition"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-shop-text text-white py-4 text-xs font-bold uppercase tracking-widest hover:bg-shop-gold transition shadow-lg">
+                        Submit Review
+                    </button>
+                    <p class="text-[10px] text-shop-muted italic text-center">Reviews are moderated before appearing on the site.</p>
+                </form>
+                {% else %}
+                <div class="text-center py-6">
+                    <p class="text-sm text-shop-muted mb-4">Please log in to leave a review.</p>
+                    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="inline-block border border-shop-text px-8 py-2.5 text-[10px] font-bold tracking-widest uppercase hover:bg-shop-text hover:text-white transition">Login to Review</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related %}
+    <div class="border-t border-shop-border pt-12">
+        <h2 class="font-serif text-2xl md:text-3xl text-shop-text mb-8">You May Also Like</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {% for item in related %}
+            <a href="{% url 'product_detail' item.slug %}" class="group block">
+                <div class="relative overflow-hidden aspect-[4/5] bg-white border border-shop-border mb-3">
+                    {% if item.primary_image %}
+                    <img src="{{ item.primary_image.image.url }}" alt="{{ item.name }}"
+                         class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center bg-gray-50">
+                        <i class="fas fa-gem text-3xl text-shop-gold/30"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <p class="text-[10px] text-shop-muted uppercase tracking-widest mb-0.5">{{ item.category.name }}</p>
+                <h3 class="font-serif text-sm text-shop-text group-hover:text-shop-gold transition leading-tight mb-1">{{ item.name }}</h3>
+                <p class="text-sm font-medium text-shop-text">₦{{ item.display_price|floatformat:0 }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

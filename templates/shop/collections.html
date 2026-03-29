@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Collections | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    <div class="text-center mb-12">
+        <h1 class="font-serif text-4xl md:text-5xl text-shop-text mb-3">Our Collections</h1>
+        <div class="h-0.5 w-14 bg-shop-gold mx-auto mb-4"></div>
+        <p class="text-shop-muted text-sm max-w-xl mx-auto">
+            Curated edits for every occasion — from bridal statements to everyday elegance.
+        </p>
+    </div>
+
+    {% if collections %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+        {% for col in collections %}
+        <a href="{% url 'collection_detail' col.slug %}" class="group relative overflow-hidden aspect-video block">
+            {% if col.banner %}
+            <img src="{{ col.banner.url }}" alt="{{ col.name }}"
+                 class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-shop-text to-gray-700"></div>
+            {% endif %}
+            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-8">
+                <h2 class="font-serif text-3xl md:text-4xl mb-2">{{ col.name }}</h2>
+                {% if col.description %}
+                <p class="text-sm text-gray-200 max-w-xs mb-4">{{ col.description|truncatechars:100 }}</p>
+                {% endif %}
+                <span class="border border-white text-white text-xs px-8 py-2 tracking-widest uppercase group-hover:bg-white group-hover:text-shop-text transition">
+                    Explore
+                </span>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="py-20 text-center text-shop-muted">No collections available yet.</div>
+    {% endif %}
+</div>
+{% endblock %}

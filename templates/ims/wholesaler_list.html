@@ -1,0 +1,68 @@
+{% extends 'ims/base.html' %}
+
+{% block content %}
+<div class="mb-6 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-ims-bodyText">Wholesale Partners</h1>
+        <p class="text-sm text-gray-500 mt-1">Review and manage wholesale account applications.</p>
+    </div>
+</div>
+
+<div class="bg-ims-pageBg border border-gray-200 rounded-lg shadow-sm">
+    <div class="p-4 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row justify-between gap-4 rounded-t-lg">
+        <div class="flex space-x-2">
+            <button class="px-4 py-2 bg-ims-bodyText text-white text-sm font-medium rounded shadow-sm">Pending <span class="ml-1 bg-ims-danger text-white py-0.5 px-1.5 rounded-full text-[10px]">2</span></button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded">Approved</button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded">Rejected</button>
+        </div>
+        <div class="relative w-full sm:w-64">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <input type="text" placeholder="Search by name or business..." class="w-full pl-10 pr-4 py-2 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-ims-accent outline-none">
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm whitespace-nowrap">
+            <thead class="bg-white text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="px-5 py-3 font-medium">Applicant Name</th>
+                    <th class="px-5 py-3 font-medium">Business Name</th>
+                    <th class="px-5 py-3 font-medium">Contact</th>
+                    <th class="px-5 py-3 font-medium">Date Applied</th>
+                    <th class="px-5 py-3 font-medium text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for profile in wholesalers %}
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-5 py-3 font-bold text-ims-bodyText">{{ profile.user.get_full_name|default:profile.user.username }}</td>
+                    <td class="px-5 py-3 text-gray-600">{{ profile.business_name|default:"N/A" }}</td>
+                    <td class="px-5 py-3">
+                        <p class="text-xs text-ims-bodyText"><i class="fas fa-envelope text-gray-400 w-4"></i> {{ profile.user.email }}</p>
+                        <p class="text-xs text-ims-bodyText mt-1"><i class="fab fa-whatsapp text-green-500 w-4"></i> {{ profile.whatsapp_number }}</p>
+                    </td>
+                    <td class="px-5 py-3 text-gray-500">{{ profile.applied_at|date:"M d, Y" }}</td>
+                    <td class="px-5 py-3 text-right space-x-2">
+                        <a href="{% url 'accounts_ims:ims_wholesaler_detail' profile.pk %}" class="inline-block bg-white border border-gray-300 text-ims-bodyText hover:bg-gray-50 px-3 py-1.5 rounded text-xs font-bold transition shadow-sm">
+                            Details
+                        </a>
+                        {% if not profile.is_verified %}
+                        <form action="{% url 'accounts_ims:ims_wholesaler_approve' profile.pk %}" method="POST" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="bg-ims-accent hover:bg-green-600 text-white px-3 py-1.5 rounded text-xs font-bold transition shadow-sm" title="Approve">
+                                <i class="fas fa-check"></i> Approve
+                            </button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="px-5 py-10 text-center text-gray-500 italic">No wholesaler applications found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

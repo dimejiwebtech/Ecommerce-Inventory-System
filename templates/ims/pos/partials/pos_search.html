@@ -1,0 +1,27 @@
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div class="bg-white border border-gray-200 rounded p-3 cursor-pointer hover:border-ims-accent hover:shadow-md transition group" 
+         @click="addToCart(1, 'Radiant Diamond Ring', 450000)">
+        <div class="aspect-square bg-gray-100 rounded mb-2 overflow-hidden border border-gray-100">
+            <img src="https://via.placeholder.com/150" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+        </div>
+        <p class="text-xs font-bold text-ims-bodyText truncate" title="Radiant Diamond Ring">Radiant Diamond Ring</p>
+        <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-gray-500">Stock: <span class="text-ims-accent font-bold">24</span></p>
+            <p class="text-sm font-bold text-ims-bodyText">₦450k</p>
+        </div>
+    </div>
+
+    <div class="bg-gray-50 border border-gray-200 rounded p-3 opacity-60 cursor-not-allowed">
+        <div class="aspect-square bg-gray-200 rounded mb-2 overflow-hidden border border-gray-200 relative">
+            <div class="absolute inset-0 bg-white/50 flex items-center justify-center">
+                <span class="bg-ims-danger text-white text-[10px] font-bold px-2 py-1 rounded">OUT OF STOCK</span>
+            </div>
+            <img src="https://via.placeholder.com/150" class="w-full h-full object-cover grayscale">
+        </div>
+        <p class="text-xs font-bold text-ims-bodyText truncate">Gold Chain 18k</p>
+        <div class="flex justify-between items-center mt-1">
+            <p class="text-xs text-ims-danger font-bold">Stock: 0</p>
+            <p class="text-sm font-bold text-ims-bodyText">₦120k</p>
+        </div>
+    </div>
+</div>

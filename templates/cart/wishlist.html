@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Wishlist | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-end mb-10 pb-4 border-b border-shop-border">
+                <div>
+                    <h1 class="font-serif text-3xl text-shop-text">My Wishlist</h1>
+                    <p class="text-shop-muted text-xs mt-1 uppercase tracking-widest font-bold">Items you've saved for later</p>
+                </div>
+                <p class="text-xs font-bold uppercase tracking-widest text-shop-muted">{{ items|length }} item{{ items|length|pluralize }}</p>
+            </div>
+
+            {% if items %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for wi in items %}
+                <div class="group relative block bg-white border border-shop-border p-4">
+                    <a href="{% url 'product_detail' wi.jewellery.slug %}" class="block">
+                        <div class="relative overflow-hidden aspect-square bg-shop-bg mb-4">
+                            {% if wi.jewellery.primary_image %}
+                            <img src="{{ wi.jewellery.primary_image.image.url }}" alt="{{ wi.jewellery.name }}"
+                                 class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center">
+                                <i class="fas fa-gem text-3xl text-shop-gold/30"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <p class="text-[9px] text-shop-muted uppercase tracking-widest mb-1 font-bold">{{ wi.jewellery.category.name }}</p>
+                        <h3 class="font-serif text-base text-shop-text group-hover:text-shop-gold transition leading-tight mb-2">{{ wi.jewellery.name }}</h3>
+                        <p class="text-sm font-bold text-shop-text">₦{{ wi.display_price|floatformat:0 }}</p>
+                    </a>
+
+                    <div class="mt-6 flex items-center justify-between gap-4 pt-4 border-t border-shop-border/50">
+                        <!-- Add to cart -->
+                        {% if wi.jewellery.stock > 0 %}
+                        <form hx-post="{% url 'cart_add' %}" hx-target="#cart-count" hx-swap="outerHTML" class="flex-1">
+                            {% csrf_token %}
+                            <input type="hidden" name="jewellery_id" value="{{ wi.jewellery.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit"
+                                    class="w-full bg-shop-text hover:bg-shop-gold text-white text-[10px] py-2.5 tracking-widest uppercase font-bold transition">
+                                Add to Cart
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-red-400 py-2.5">Out of Stock</span>
+                        {% endif %}
+
+                        <!-- Remove from wishlist -->
+                        <form hx-post="{% url 'wishlist_toggle' %}" hx-target="#wishlist-item-{{ wi.jewellery.id }}"
+                              hx-swap="outerHTML" id="wishlist-item-{{ wi.jewellery.id }}">
+                            {% csrf_token %}
+                            <input type="hidden" name="jewellery_id" value="{{ wi.jewellery.id }}">
+                            <button type="submit"
+                                    class="w-10 h-10 flex items-center justify-center border border-shop-border hover:bg-red-50 hover:text-red-500 text-shop-muted transition">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="border border-shop-border border-dashed p-12 text-center bg-shop-bg/30">
+                <div class="w-16 h-16 rounded-full bg-shop-bg flex items-center justify-center text-shop-gold/40 text-2xl mx-auto mb-4">
+                    <i class="far fa-heart"></i>
+                </div>
+                <p class="text-shop-muted italic">Your wishlist is empty.</p>
+                <a href="{% url 'shop_list' %}" class="text-shop-gold text-sm hover:underline mt-2 inline-block">Browse our collection →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

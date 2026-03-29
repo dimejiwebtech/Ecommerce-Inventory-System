@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Luxury Jewellery{% endblock %} | Your Brand</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // Send Django CSRF token with every HTMX request
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.addEventListener('htmx:configRequest', function (event) {
+                event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+            });
+        });
+    </script>
+
+</head>
+<body class="bg-shop-bg text-shop-text font-sans antialiased flex flex-col min-h-screen">
+
+    <div id="announcement-banner">
+        {% include 'announcements/partials/banner.html' %}
+    </div>
+
+    <header class="bg-white/80 backdrop-blur-md border-b border-shop-border sticky top-0 z-40" x-data="{ mobileMenuOpen: false }">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-shop-text hover:text-shop-gold transition">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+
+                <a href="/" class="font-serif text-3xl font-bold tracking-tight text-shop-text flex-shrink-0">
+                    AURA<span class="text-shop-gold">.</span>
+                </a>
+
+                <nav class="hidden md:flex items-center space-x-8 lg:space-x-10">
+                    <a href="{% url 'shop_list' %}" class="text-sm font-bold uppercase tracking-widest text-shop-text hover:text-shop-gold transition-colors duration-200">Shop</a>
+                    
+                    <!-- Categories Dropdown (Alpine.js) -->
+                    <div class="relative" x-data="{ open: false }" @mouseleave="open = false">
+                        <button @mouseenter="open = true" @click="open = !open" class="text-sm font-bold uppercase tracking-widest text-shop-text hover:text-shop-gold transition-colors duration-200 flex items-center gap-1.5 py-4">
+                            Categories <i class="fas fa-chevron-down text-[10px] mt-0.5"></i>
+                        </button>
+                        
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-2"
+                             class="absolute left-0 mt-0 w-64 bg-white border border-shop-border shadow-2xl py-3 z-50"
+                             style="display: none;">
+                            {% for cat in categories %}
+                                <a href="{% url 'shop_list' %}?category={{ cat.slug }}" class="block px-6 py-2.5 text-sm font-medium text-shop-text hover:bg-shop-bg hover:text-shop-gold hover:pl-8 transition-all duration-200">{{ cat.name }}</a>
+                            {% empty %}
+                                <span class="block px-6 py-2.5 text-sm text-shop-muted italic">No categories</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'collections' %}" class="text-sm font-bold uppercase tracking-widest text-shop-text hover:text-shop-gold transition-colors duration-200">Collections</a>
+                </nav>
+
+                <div class="flex items-center space-x-4 sm:space-x-6">
+                    <a href="{% url 'search' %}" class="text-shop-text hover:text-shop-gold transition text-lg"><i class="fas fa-search"></i></a>
+                    <a href="{% url 'accounts:customer_dashboard' %}" class="text-shop-text hover:text-shop-gold transition text-lg"><i class="far fa-user"></i></a>
+                    <a href="{% url 'accounts:wishlist' %}" class="hidden sm:block text-shop-text hover:text-shop-gold transition text-lg"><i class="far fa-heart"></i></a>
+                    
+                    <button @click="$dispatch('open-cart')" class="relative text-shop-text hover:text-shop-gold transition group text-lg pl-2 border-l border-shop-border">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span id="cart-count" class="absolute -top-1.5 -right-2.5 bg-shop-gold text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm">
+                            {% include 'cart/partials/cart_count.html' %}
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div x-show="mobileMenuOpen" 
+             class="md:hidden absolute top-20 left-0 right-0 bg-white border-b border-shop-border shadow-2xl py-6 px-6 z-40 overflow-y-auto max-h-[calc(100vh-5rem)]"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-4"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-4"
+             style="display: none;">
+            
+            <nav class="flex flex-col space-y-6">
+                <a href="{% url 'shop_list' %}" class="text-lg font-bold tracking-widest uppercase text-shop-text hover:text-shop-gold">All Jewellery</a>
+                
+                <div x-data="{ openCat: false }" class="border-y border-shop-border/50 py-4">
+                    <button @click="openCat = !openCat" class="w-full flex justify-between items-center text-lg font-bold tracking-widest uppercase text-shop-text hover:text-shop-gold">
+                        Categories <i class="fas text-sm" :class="openCat ? 'fa-minus' : 'fa-plus'"></i>
+                    </button>
+                    <div x-show="openCat" class="pl-4 mt-4 space-y-4">
+                        {% for cat in categories %}
+                            <a href="{% url 'shop_list' %}?category={{ cat.slug }}" class="block text-base font-medium text-shop-muted hover:text-shop-gold">{{ cat.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="{% url 'collections' %}" class="text-lg font-bold tracking-widest uppercase text-shop-text hover:text-shop-gold">Collections</a>
+                
+                <div class="pt-6 border-t border-shop-border flex flex-col space-y-4">
+                    <a href="{% url 'accounts:customer_dashboard' %}" class="text-base font-bold uppercase tracking-widest flex items-center gap-3"><i class="far fa-user text-shop-gold"></i> My Account</a>
+                    <a href="{% url 'accounts:wishlist' %}" class="text-base font-bold uppercase tracking-widest flex items-center gap-3"><i class="far fa-heart text-shop-gold"></i> Saved Items</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white border-t border-shop-border mt-16 pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-shop-border pb-12">
+                <!-- Brand Info -->
+                <div class="md:col-span-1">
+                    <h3 class="font-serif text-3xl font-bold mb-6">AURA<span class="text-shop-gold">.</span></h3>
+                    <p class="text-shop-muted text-sm leading-relaxed mb-6">Crafting timeless elegance. Wholesale & Retail fine jewellery with flexible stockpile options tailored for you.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full border border-shop-border flex items-center justify-center text-shop-muted hover:text-shop-gold hover:border-shop-gold transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full border border-shop-border flex items-center justify-center text-shop-muted hover:text-shop-gold hover:border-shop-gold transition"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full border border-shop-border flex items-center justify-center text-shop-muted hover:text-shop-gold hover:border-shop-gold transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Shop Links -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-sm uppercase tracking-[0.2em] text-shop-text mb-6">Shop</h4>
+                    <nav class="flex flex-col space-y-3">
+                        <a href="{% url 'shop_list' %}" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">All Jewellery</a>
+                        {% for cat in categories|slice:":3" %}
+                        <a href="{% url 'shop_list' %}?category={{ cat.slug }}" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">{{ cat.name }}</a>
+                        {% endfor %}
+                        <a href="{% url 'collections' %}" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">Special Collections</a>
+                    </nav>
+                </div>
+
+                <!-- Info Links -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-sm uppercase tracking-[0.2em] text-shop-text mb-6">Information</h4>
+                    <nav class="flex flex-col space-y-3">
+                        <a href="#" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">About Us</a>
+                        <a href="#" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">Shipping Policy</a>
+                        <a href="#" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">Returns & Exchanges</a>
+                        <a href="#" class="text-sm font-medium text-shop-muted hover:text-shop-gold transition">Wholesale Program</a>
+                    </nav>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="md:col-span-1 space-y-4">
+                    <h4 class="font-bold text-sm uppercase tracking-[0.2em] text-shop-text mb-6">Stay Updated</h4>
+                    <p class="text-xs text-shop-muted mb-4 leading-relaxed">Subscribe to receive updates, access to exclusive deals, and more.</p>
+                    <form class="flex flex-col space-y-3">
+                        <input type="email" placeholder="Enter your email address" class="w-full px-4 py-3 border border-shop-border bg-shop-bg focus:outline-none focus:border-shop-gold text-sm rounded-none">
+                        <button type="submit" class="w-full bg-shop-text text-white px-4 py-3 hover:bg-shop-gold transition text-sm font-bold tracking-[0.2em] uppercase">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Copyright Area -->
+            <div class="flex flex-col md:flex-row items-center justify-between pt-8 text-sm text-shop-muted">
+                <p>&copy; {% now "Y" %} AURA Jewellery. All rights reserved.</p>
+                <p class="mt-4 md:mt-0 font-medium">
+                    Powered By <a href="https://wtddigital.com" target="_blank" class="text-shop-text hover:text-shop-gold transition underline decoration-shop-gold/30 underline-offset-4 font-bold">WTD-Digital</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    {% include 'cart/partials/cart_drawer.html' %}
+    {% include 'partials/messages.html' %}
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

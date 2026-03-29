@@ -1,0 +1,15 @@
+{# HTMX partial — re-rendered when cart items change #}
+<div id="cart-summary" class="space-y-3 text-sm">
+    <div class="flex justify-between">
+        <span class="text-shop-muted">Subtotal ({{ cart.item_count }} item{{ cart.item_count|pluralize }})</span>
+        <span class="font-medium">₦{{ cart.total|floatformat:0 }}</span>
+    </div>
+    <div class="flex justify-between">
+        <span class="text-shop-muted">Shipping</span>
+        <span class="text-shop-muted text-xs">Calculated at checkout</span>
+    </div>
+    <div class="pt-4 border-t border-shop-border flex justify-between items-center">
+        <span class="font-semibold text-shop-text">Estimated Total</span>
+        <span class="text-2xl font-bold text-shop-text font-serif">₦{{ cart.total|floatformat:0 }}</span>
+    </div>
+</div>

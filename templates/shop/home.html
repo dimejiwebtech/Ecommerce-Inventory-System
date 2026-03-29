@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AURA Jewellery — Handcrafted Luxury{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{% if announcement %}
+<div class="bg-shop-text text-white text-center text-xs py-2 tracking-widest uppercase px-4"
+     hx-get="{% url 'announcement_banner' %}" hx-trigger="load" hx-swap="outerHTML">
+    {{ announcement.text }}
+    {% if announcement.link %}
+    <a href="{{ announcement.link }}" class="underline ml-2 text-shop-gold">{{ announcement.link_label|default:"Learn More" }}</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Hero Carousel Component -->
+<section x-data="heroCarousel()" x-init="startAutoPlay()" class="relative h-[65vh] md:h-[75vh] w-full overflow-hidden bg-shop-text">
+    
+    <!-- Slides -->
+    <template x-for="(slide, index) in slides" :key="index">
+        <div x-show="activeSlide === index" 
+             x-transition:enter="transition-opacity ease-in-out duration-1000"
+             x-transition:enter-start="opacity-0 scale-105"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition-opacity ease-in-out duration-1000 absolute top-0 left-0 right-0 bottom-0"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="absolute inset-0 w-full h-full">
+            
+            <!-- Background Image -->
+            <img :src="slide.image" :alt="slide.title" class="absolute inset-0 w-full h-full object-cover object-center" />
+            
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+            
+            <!-- Content -->
+            <div class="absolute inset-0 flex flex-col items-center justify-center text-center px-4 max-w-4xl mx-auto z-10">
+                <span x-text="slide.subtitle" class="text-shop-gold uppercase tracking-[0.3em] text-[10px] md:text-xs font-bold mb-4 block translate-y-4 opacity-0 transition-all duration-700 delay-300 transform" :class="{'translate-y-0 opacity-100': activeSlide === index}"></span>
+                
+                <h1 x-text="slide.title" class="font-serif text-4xl md:text-6xl lg:text-7xl text-white mb-5 leading-tight translate-y-4 opacity-0 transition-all duration-700 delay-500 transform drop-shadow-lg" :class="{'translate-y-0 opacity-100': activeSlide === index}"></h1>
+                
+                <p x-text="slide.desc" class="text-gray-200 text-sm md:text-lg mb-8 font-light max-w-2xl mx-auto translate-y-4 opacity-0 transition-all duration-700 delay-700 transform drop-shadow" :class="{'translate-y-0 opacity-100': activeSlide === index}"></p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center translate-y-4 opacity-0 transition-all duration-700 delay-1000 transform" :class="{'translate-y-0 opacity-100': activeSlide === index}">
+                    <a :href="slide.primary_url" x-text="slide.primary_cta" class="bg-shop-gold hover:bg-shop-goldHover text-white px-8 py-3.5 text-xs font-bold transition-all tracking-widest uppercase shadow-lg shadow-shop-gold/20 hover:-translate-y-1"></a>
+                    <template x-if="slide.secondary_url">
+                        <a :href="slide.secondary_url" x-text="slide.secondary_cta" class="border border-white/40 backdrop-blur-sm text-white hover:bg-white hover:text-shop-text px-8 py-3.5 text-xs font-bold transition-all tracking-widest uppercase hover:-translate-y-1"></a>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Indicators -->
+    <div class="absolute bottom-8 left-0 right-0 flex justify-center gap-3 z-20">
+        <template x-for="(slide, index) in slides" :key="index">
+            <button @click="goToSlide(index)" 
+                    class="h-1.5 transition-all duration-300 rounded-full"
+                    :class="activeSlide === index ? 'w-8 bg-shop-gold' : 'w-2 bg-white/50 hover:bg-white/90'"></button>
+        </template>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button @click="prev()" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/20 hover:bg-black/50 text-white backdrop-blur-md flex items-center justify-center transition-all opacity-0 md:opacity-100 hover:scale-110 z-20">
+        <i class="fas fa-chevron-left text-sm"></i>
+    </button>
+    <button @click="next()" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/20 hover:bg-black/50 text-white backdrop-blur-md flex items-center justify-center transition-all opacity-0 md:opacity-100 hover:scale-110 z-20">
+        <i class="fas fa-chevron-right text-sm"></i>
+    </button>
+</section>
+
+<!-- Categories -->
+{% if categories %}
+<section class="py-10 md:py-16 bg-white overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="font-serif text-2xl md:text-3xl text-shop-text mb-1">Shop by Category</h2>
+                <div class="h-0.5 w-10 bg-shop-gold"></div>
+            </div>
+        </div>
+        
+        <!-- Mobile: Horizontal Scroll | Desktop: Grid -->
+        <div class="flex md:grid md:grid-cols-5 gap-4 overflow-x-auto md:overflow-x-visible pb-4 snap-x no-scrollbar">
+            {% for category in categories %}
+            <a href="{% url 'shop_list' %}?category={{ category.slug }}" class="min-w-[45%] sm:min-w-[30%] md:min-w-0 snap-start group block text-center">
+                <div class="relative overflow-hidden rounded-full aspect-square mb-3 bg-shop-bg border border-shop-border p-1.5 mx-auto w-24 h-24 sm:w-32 sm:h-32 md:w-full md:h-full">
+                    {% if category.image %}
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                         class="object-cover w-full h-full rounded-full transform group-hover:scale-110 transition duration-700">
+                    {% else %}
+                    <div class="w-full h-full rounded-full bg-gradient-to-br from-shop-gold/10 to-shop-gold/30 flex items-center justify-center">
+                        <i class="fas fa-gem text-shop-gold text-xl sm:text-2xl"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <h3 class="font-serif text-sm md:text-base text-shop-text group-hover:text-shop-gold transition font-medium">{{ category.name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Featured / Best Sellers -->
+{% if best_sellers %}
+<section class="py-10 md:py-16 bg-shop-bg border-t border-shop-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="font-serif text-2xl md:text-3xl text-shop-text mb-1">Top Selling</h2>
+                <div class="h-0.5 w-10 bg-shop-gold"></div>
+            </div>
+            <a href="{% url 'shop_list' %}" class="text-xs font-bold tracking-widest uppercase text-shop-gold hover:text-shop-text transition">View All &rarr;</a>
+        </div>        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
+            {% for product in best_sellers %}
+            <a href="{% url 'product_detail' product.slug %}" class="group block bg-white border border-shop-border/50 hover:shadow-lg transition-all duration-300">
+                <div class="relative overflow-hidden aspect-[1/1] bg-gray-50 flex items-center justify-center">
+                    {% if product.primary_image %}
+                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                         class="object-cover w-full h-full transform group-hover:scale-110 transition duration-700">
+                    {% else %}
+                    <i class="fas fa-gem text-3xl text-shop-gold/20"></i>
+                    {% endif %}
+                    
+                    <div class="absolute top-2 left-2 flex flex-col gap-1">
+                        {% if product.stock_status == 'low_stock' %}
+                        <span class="bg-amber-500 text-white text-[9px] px-2 py-0.5 font-bold rounded-sm">LOW</span>
+                        {% elif product.stock == 0 %}
+                        <span class="bg-red-500 text-white text-[9px] px-2 py-0.5 font-bold rounded-sm">OUT</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="p-3 text-center">
+                    <p class="text-[10px] uppercase tracking-widest text-shop-muted mb-1">{{ product.category.name }}</p>
+                    <h3 class="font-serif text-sm text-shop-text mb-1 group-hover:text-shop-gold transition line-clamp-1 px-2">{{ product.name }}</h3>
+                    <p class="text-shop-gold font-bold text-sm">₦{{ product.display_price|floatformat:0 }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="mt-8 text-center sm:hidden">
+            <a href="{% url 'shop_list' %}" class="inline-block border border-shop-gold text-shop-gold hover:bg-shop-gold hover:text-white px-8 py-2 text-xs font-bold tracking-widest uppercase transition">View All</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Collections editorial -->
+{% if collections %}
+<section class="py-10 md:py-16 bg-white border-t border-shop-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h2 class="font-serif text-2xl md:text-3xl text-shop-text mb-1">Featured Collections</h2>
+                <div class="h-0.5 w-10 bg-shop-gold"></div>
+            </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+            {% for col in collections %}
+            <a href="{% url 'collection_detail' col.slug %}" class="group relative overflow-hidden aspect-[16/7] md:aspect-[16/8] block">
+                {% if col.banner %}
+                <img src="{{ col.banner.url }}" alt="{{ col.name }}"
+                     class="object-cover w-full h-full transform group-hover:scale-105 transition duration-1000">
+                {% else %}
+                <div class="w-full h-full bg-slate-100"></div>
+                {% endif %}
+                <div class="absolute inset-0 bg-black/30 group-hover:bg-black/50 transition-all duration-500"></div>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-4">
+                    <h3 class="font-serif text-xl md:text-2xl mb-1 drop-shadow-md">{{ col.name }}</h3>
+                    <p class="text-xs text-gray-100 max-w-xs line-clamp-1 opacity-80 group-hover:opacity-100 transition">{{ col.description }}</p>
+                    <span class="mt-4 border border-white/60 text-white text-[10px] font-bold px-5 py-2 tracking-widest uppercase group-hover:bg-white group-hover:text-shop-text group-hover:border-white transition-all duration-300">Discover</span>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Wholesale CTA -->
+<section class="py-14 bg-shop-text">
+    <div class="max-w-3xl mx-auto px-4 text-center">
+        <span class="text-shop-gold uppercase tracking-[0.2em] text-xs font-semibold mb-3 block">For Retailers</span>
+        <h2 class="font-serif text-2xl md:text-4xl text-white mb-4">Become an AURA Wholesale Partner</h2>
+        <p class="text-gray-400 text-sm md:text-base mb-8 max-w-xl mx-auto">
+            Access exclusive B2B pricing, bulk ordering, and dedicated account support. Apply in minutes.
+        </p>
+        <a href="{% url 'accounts:register' %}" class="bg-shop-gold hover:bg-shop-goldHover text-white px-10 py-3 text-sm font-medium tracking-wide transition inline-block">Apply for Wholesale Access</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function heroCarousel() {
+        return {
+            activeSlide: 0,
+            autoPlayInterval: null,
+            slides: [
+                {
+                    image: 'https://images.unsplash.com/photo-1584302179602-e4c3d3fd629d?q=80&w=2000&auto=format&fit=crop',
+                    subtitle: 'Winter Collection',
+                    title: 'Elegance in Every Detail',
+                    desc: 'Handcrafted luxury jewellery tailored for retail and exclusive wholesale partnerships.',
+                    primary_cta: 'Shop Now',
+                    primary_url: '{% url "shop_list" %}',
+                    secondary_cta: 'Apply for Wholesale',
+                    secondary_url: '{% url "accounts:register" %}'
+                },
+                {
+                    image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=2000&auto=format&fit=crop',
+                    subtitle: 'Bridal Selection',
+                    title: 'Timeless Promises',
+                    desc: 'Discover our premium assortment of engagement rings and bridal accessories designed to last forever.',
+                    primary_cta: 'View Collections',
+                    primary_url: '{% url "collections" %}',
+                    secondary_cta: '',
+                    secondary_url: ''
+                },
+                {
+                    image: 'https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=2000&auto=format&fit=crop',
+                    subtitle: 'Exclusive Investment',
+                    title: 'Gold & Diamond Reserve',
+                    desc: 'Secure your wealth with our vaulted stockpile options. Buy today, store securely, and manage easily.',
+                    primary_cta: 'Explore Stockpile',
+                    primary_url: '{% url "accounts:login" %}',
+                    secondary_cta: 'Join Today',
+                    secondary_url: '{% url "accounts:register" %}'
+                }
+            ],
+            next() {
+                this.activeSlide = this.activeSlide === this.slides.length - 1 ? 0 : this.activeSlide + 1;
+                this.resetAutoPlay();
+            },
+            prev() {
+                this.activeSlide = this.activeSlide === 0 ? this.slides.length - 1 : this.activeSlide - 1;
+                this.resetAutoPlay();
+            },
+            goToSlide(index) {
+                this.activeSlide = index;
+                this.resetAutoPlay();
+            },
+            startAutoPlay() {
+                this.autoPlayInterval = setInterval(() => {
+                    this.next();
+                }, 6000);
+            },
+            resetAutoPlay() {
+                clearInterval(this.autoPlayInterval);
+                this.startAutoPlay();
+            }
+        }
+    }
+</script>
+{% endblock %}

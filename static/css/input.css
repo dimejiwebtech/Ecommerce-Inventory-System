@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Shop Frontend Colors ─────────────────────────── */
+  --color-shop-bg:        #fdf8f2;
+  --color-shop-text:      #1a1a1a;
+  --color-shop-gold:      #c9a84c;
+  --color-shop-goldHover: #a8892e;
+  --color-shop-muted:     #6b7280;
+  --color-shop-border:    #e5e7eb;
+
+  /* ── Stock Status ─────────────────────────────────── */
+  --color-status-inStock:    #16a34a;
+  --color-status-lowStock:   #d97706;
+  --color-status-outOfStock: #dc2626;
+
+  /* ── IMS Back-office Colors ───────────────────────── */
+  --color-ims-sidebar: #252636;
+  --color-ims-header:  #212529;
+  --color-ims-navbar:  #6f6486;
+  --color-ims-accent:  #4caf50;
+  --color-ims-danger:  #e74c3c;
+  --color-ims-link:    #adb5bd;
+
+  /* ── Typography ───────────────────────────────────── */
+  --font-family-sans:  "Inter", sans-serif;
+  --font-family-serif: "Cormorant Garamond", serif;
+}

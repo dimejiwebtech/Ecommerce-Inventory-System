@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}My Stockpile | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex justify-between items-end mb-8 border-b border-shop-border pb-4">
+        <div>
+            <h1 class="font-serif text-4xl text-shop-text">My Stockpile</h1>
+            <p class="text-shop-muted mt-2">Manage your vaulted items. Free storage for 30 days.</p>
+        </div>
+        <div class="hidden md:flex gap-8 text-right">
+            <div>
+                <p class="text-xs text-shop-muted uppercase tracking-wider">Total Items</p>
+                <p class="text-xl font-medium text-shop-text">4</p>
+            </div>
+            <div>
+                <p class="text-xs text-shop-muted uppercase tracking-wider">Outstanding Fees</p>
+                <p class="text-xl font-medium text-status-outOfStock">₦1,200</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white border border-shop-border overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="bg-shop-bg text-shop-muted border-b border-shop-border">
+                    <tr>
+                        <th class="px-6 py-4 font-medium">Item</th>
+                        <th class="px-6 py-4 font-medium">Date Vaulted</th>
+                        <th class="px-6 py-4 font-medium">Days Held</th>
+                        <th class="px-6 py-4 font-medium">Accrued Fees</th>
+                        <th class="px-6 py-4 font-medium text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-shop-border">
+                    
+                    <tr class="hover:bg-shop-bg/50 transition">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-4">
+                                <img src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?q=80&w=100" class="w-12 h-12 object-cover border border-shop-border">
+                                <div>
+                                    <p class="font-medium text-shop-text">Radiant Diamond Ring</p>
+                                    <p class="text-xs text-shop-muted">Paid: ₦450,000</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-shop-text">Oct 12, 2023</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-status-inStock/10 text-status-inStock px-2 py-1 rounded-sm text-xs font-bold">12 Days</span>
+                        </td>
+                        <td class="px-6 py-4 text-shop-text">₦0</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="text-shop-gold hover:text-shop-goldHover font-medium underline">Request Delivery</button>
+                        </td>
+                    </tr>
+
+                    <tr class="hover:bg-shop-bg/50 transition bg-red-50/30">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-4">
+                                <img src="https://images.unsplash.com/photo-1599643478524-fb66f7ca066b?q=80&w=100" class="w-12 h-12 object-cover border border-shop-border">
+                                <div>
+                                    <p class="font-medium text-shop-text">Gold Chain 18k</p>
+                                    <p class="text-xs text-shop-muted">Paid: ₦120,000</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-shop-text">Sep 01, 2023</td>
+                        <td class="px-6 py-4">
+                            <span class="bg-status-outOfStock/10 text-status-outOfStock px-2 py-1 rounded-sm text-xs font-bold">36 Days</span>
+                            <p class="text-[10px] text-status-outOfStock mt-1">+6 days overdue</p>
+                        </td>
+                        <td class="px-6 py-4 font-bold text-status-outOfStock">₦1,200</td>
+                        <td class="px-6 py-4 text-right">
+                            <button class="bg-shop-text text-white px-4 py-2 text-xs hover:bg-shop-gold transition">Pay Fees & Release</button>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

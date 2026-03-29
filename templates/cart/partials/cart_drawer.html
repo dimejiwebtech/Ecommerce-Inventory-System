@@ -1,0 +1,48 @@
+<!-- Cart Drawer — AlpineJS + HTMX live cart -->
+<div x-data="{ open: false }"
+     x-on:open-cart.window="open = true; $nextTick(() => htmx.process($el))"
+     x-show="open"
+     x-cloak
+     class="fixed inset-0 z-50 flex justify-end">
+
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-black/40" @click="open = false"></div>
+
+    <!-- Drawer panel -->
+    <div class="relative w-full max-w-sm bg-white h-full flex flex-col shadow-xl"
+         x-show="open"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full"
+         x-transition:enter-end="translate-x-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0"
+         x-transition:leave-end="translate-x-full">
+
+        <div class="flex items-center justify-between p-6 border-b border-shop-border">
+            <h2 class="font-serif text-2xl">Your Cart</h2>
+            <button @click="open = false" class="text-shop-muted hover:text-shop-text transition">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Items: loaded fresh via HTMX each time the drawer opens -->
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6"
+             hx-get="{% url 'cart_detail' %}?partial=items"
+             hx-trigger="open-cart from:window"
+             hx-target="#cart-items"
+             hx-swap="innerHTML">
+            <p class="text-center py-12 text-shop-muted text-sm">Loading…</p>
+        </div>
+
+        <div class="p-6 border-t border-shop-border space-y-3">
+            <a href="{% url 'cart_detail' %}"
+               class="block w-full text-center bg-shop-text text-white py-4 font-medium tracking-wide hover:bg-shop-gold transition">
+                View Cart &amp; Checkout
+            </a>
+            <a href="{% url 'accounts:wishlist' %}"
+               class="block w-full text-center border border-shop-border text-shop-muted py-3 text-sm hover:border-shop-text transition">
+                <i class="far fa-heart mr-2"></i>Wishlist
+            </a>
+        </div>
+    </div>
+</div>

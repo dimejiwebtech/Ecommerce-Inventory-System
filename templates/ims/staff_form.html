@@ -1,0 +1,74 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}{{ title }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+        <p class="text-sm text-slate-500">Manage administrative access and roles.</p>
+    </div>
+    <a href="{% url 'accounts:ims_staff_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Staff List
+    </a>
+</div>
+
+<div class="max-w-4xl">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        
+        <div class="bg-white p-6 md:p-8 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fas fa-user-shield opacity-30"></i> Account Information
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}<p class="text-red-500 text-[10px] mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Email Address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}<p class="text-red-500 text-[10px] mt-1">{{ form.email.errors.0 }}</p>{% endif %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">First Name</label>
+                    {{ form.first_name }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Last Name</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-slate-50">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">System Role</label>
+                    {{ form.role }}
+                    <p class="text-[10px] text-slate-400 mt-1 italic">Determines levels of access to IMS features.</p>
+                </div>
+                <div class="flex items-end pb-2">
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        {{ form.is_active }}
+                        <span class="text-sm text-slate-700 font-medium group-hover:text-[var(--ims-accent)] transition">Account Active</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button type="submit" class="bg-slate-800 text-white px-8 py-3 rounded-lg font-bold text-sm hover:bg-slate-900 transition shadow-lg">
+                Save Staff Member
+            </button>
+            <a href="{% url 'accounts:ims_staff_list' %}" class="text-slate-500 text-xs font-bold uppercase tracking-widest hover:text-slate-800 transition">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}{{ title }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <div class="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">
+        <a href="{% url 'catalogue:ims_collection_list' %}" class="hover:text-[var(--ims-accent)] transition">Collections</a>
+        <i class="fas fa-chevron-right text-[8px]"></i>
+        <span class="text-slate-600">{{ title }}</span>
+    </div>
+    <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+</div>
+
+<div class="max-w-3xl">
+    <form method="post" enctype="multipart/form-data" class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        {% csrf_token %}
+        <div class="p-8 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Collection Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                    <p class="text-rose-500 text-xs mt-1">{{ form.name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Banner Image</label>
+                    <div class="flex flex-col gap-4">
+                        {% if collection.banner %}
+                        <div class="w-full h-32 rounded-lg border border-slate-200 overflow-hidden flex-shrink-0">
+                            <img src="{{ collection.banner.url }}" class="w-full h-full object-cover">
+                        </div>
+                        {% endif %}
+                        <div class="flex-1">
+                            {{ form.banner }}
+                            <p class="text-[10px] text-slate-400 mt-1 italic">Dimensions: 1920x600px recommended for homepage banners.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="py-4 border-y border-slate-50">
+                    <div class="flex items-center gap-3">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            {{ form.is_featured }}
+                            <span class="ml-3 text-xs font-bold text-slate-700 uppercase tracking-tight">Feature on Homepage</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="py-4 border-y border-slate-50 md:border-l md:pl-6">
+                    <div class="flex items-center gap-3">
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            {{ form.is_active }}
+                            <span class="ml-3 text-xs font-bold text-slate-700 uppercase tracking-tight">Active & Visible</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+            <a href="{% url 'catalogue:ims_collection_list' %}" class="text-xs font-bold text-slate-500 hover:text-slate-800 transition">Cancel</a>
+            <button type="submit" class="bg-[var(--ims-accent)] text-white px-8 py-2.5 rounded-lg shadow-sm text-sm font-bold hover:opacity-90 transition">
+                Save Collection
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,197 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Order #{{ order.order_number }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Order #{{ order.order_number }}</h1>
+        <p class="text-sm text-slate-500">Placed on {{ order.placed_at|date:"F d, Y @ H:i" }}</p>
+    </div>
+    <a href="{% url 'orders_ims:ims_order_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Orders
+    </a>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 space-y-6">
+        <!-- Order Items -->
+        <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-50 bg-slate-50/50">
+                <h3 class="font-bold text-slate-800">Order Items</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-widest">
+                        <tr>
+                            <th class="px-6 py-3 font-bold">Product</th>
+                            <th class="px-6 py-3 font-bold text-center">Qty</th>
+                            <th class="px-6 py-3 font-bold text-right">Unit Price</th>
+                            <th class="px-6 py-3 font-bold text-right">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded bg-slate-100 flex items-center justify-center text-slate-400">
+                                        <i class="fas fa-gem"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800">{{ item.jewellery_name }}</p>
+                                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-tighter">SKU: {{ item.jewellery_sku }}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-center font-medium">{{ item.quantity }}</td>
+                            <td class="px-6 py-4 text-right text-slate-500">₦{{ item.unit_price|floatformat:2 }}</td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-800">₦{{ item.total_price|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="bg-slate-50/30">
+                        <tr>
+                            <td colspan="3" class="px-6 py-3 text-right text-slate-500 font-medium">Subtotal</td>
+                            <td class="px-6 py-3 text-right font-bold text-slate-800">₦{{ order.subtotal|floatformat:2 }}</td>
+                        </tr>
+                        {% if order.discount_amount > 0 %}
+                        <tr>
+                            <td colspan="3" class="px-6 py-3 text-right text-rose-500 font-medium transition">Discount ({{ order.coupon.code|default:"PROMO" }})</td>
+                            <td class="px-6 py-3 text-right font-bold text-rose-600">-₦{{ order.discount_amount|floatformat:2 }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr class="border-t border-slate-200">
+                            <td colspan="3" class="px-6 py-4 text-right text-slate-800 font-bold uppercase tracking-widest">Grand Total</td>
+                            <td class="px-6 py-4 text-right text-xl font-black text-[var(--ims-accent)]">₦{{ order.grand_total|floatformat:2 }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!-- Customer & Shipping -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-user-circle opacity-30"></i> Customer Details
+                </h3>
+                <div class="space-y-3 text-sm">
+                    <p><span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Name</span> {{ order.customer_name }}</p>
+                    <p><span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Email</span> {{ order.customer_email }}</p>
+                    <p><span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Phone</span> {{ order.customer_phone|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fas fa-shipping-fast opacity-30"></i> Shipping Address
+                </h3>
+                {% with addr=order.shipping_address %}
+                {% if addr %}
+                <div class="text-sm text-slate-600 leading-relaxed">
+                    <p class="font-bold text-slate-800 mb-1">{{ addr.full_name }}</p>
+                    <p>{{ addr.address_line1 }}</p>
+                    {% if addr.address_line2 %}<p>{{ addr.address_line2 }}</p>{% endif %}
+                    <p>{{ addr.city }}, {{ addr.state }}</p>
+                    <p>{{ addr.postal_code }} {{ addr.country.name }}</p>
+                </div>
+                {% else %}
+                <p class="text-sm text-slate-400 italic">No shipping address provided.</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Sidebar -->
+    <div class="space-y-6">
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-6">Order Management</h3>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Update Status</label>
+                    <select name="status" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[var(--ims-accent)] text-sm bg-white">
+                        {% for code, label in order.STATUS_CHOICES %}
+                        <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="w-full bg-[var(--ims-accent)] text-white py-3 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-md">
+                    Update Order
+                </button>
+            </form>
+            
+            <div class="mt-8 pt-6 border-t border-slate-50">
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Status Timeline</h4>
+                <div class="space-y-4">
+                    {% for history in order.status_history.all|dictsortreversed:"changed_at" %}
+                    <div class="flex gap-3">
+                        <div class="w-1.5 h-1.5 rounded-full mt-1.5 {% if forloop.first %}bg-[var(--ims-accent)] shadow-[0_0_0_3px_rgba(40,167,69,0.15)]{% else %}bg-slate-200{% endif %}"></div>
+                        <div>
+                            <p class="text-xs font-bold text-slate-700 uppercase tracking-tight">{{ history.get_status_display }}</p>
+                            <p class="text-[10px] text-slate-400">{{ history.changed_at|date:"M d, Y @ H:i" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Shipping Management -->
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+            <h3 class="font-bold text-slate-800 mb-4 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-truck-moving opacity-30"></i> Shipping Info
+                </div>
+                {% if order.shipment %}
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full {% if order.shipment.status == 'delivered' %}bg-green-100 text-green-700{% else %}bg-amber-100 text-amber-700{% endif %} uppercase">
+                    {{ order.shipment.get_status_display }}
+                </span>
+                {% endif %}
+            </h3>
+            
+            {% if order.shipment %}
+            <div class="space-y-3 text-sm mb-6">
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Carrier</span>
+                    <p class="font-medium text-slate-800">{{ order.shipment.carrier|default:"Not specified" }}</p>
+                </div>
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Tracking Number</span>
+                    <p class="font-mono text-xs text-slate-800 bg-slate-50 px-2 py-1 rounded">{{ order.shipment.tracking_number|default:"Pending..." }}</p>
+                </div>
+                {% if order.shipment.notes %}
+                <div>
+                    <span class="text-slate-400 font-bold uppercase text-[10px] tracking-widest block mb-0.5">Shipping Notes</span>
+                    <p class="text-xs text-slate-500 italic">{{ order.shipment.notes }}</p>
+                </div>
+                {% endif %}
+            </div>
+            <a href="{% url 'orders_ims:ims_shipment_edit' order.shipment.pk %}" class="block w-full text-center border border-slate-200 text-slate-600 py-3 rounded-lg font-bold text-xs hover:bg-slate-50 transition">
+                <i class="fas fa-edit mr-1.5 opacity-50"></i> Update Shipment
+            </a>
+            {% else %}
+            <div class="text-center py-4 bg-slate-50/50 rounded-lg border border-dashed border-slate-200 mb-6">
+                <p class="text-xs text-slate-400 italic">No shipment record found.</p>
+            </div>
+            <a href="{% url 'orders_ims:ims_shipment_add' order.ref_id %}" class="block w-full text-center bg-slate-800 text-white py-3 rounded-lg font-bold text-xs hover:bg-slate-900 transition shadow-sm">
+                <i class="fas fa-plus mr-1.5"></i> Create Shipment
+            </a>
+            {% endif %}
+        </div>
+        
+        {% if order.notes %}
+        <div class="bg-amber-50 p-6 rounded-xl border border-amber-100">
+            <h4 class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-2 flex items-center gap-2">
+                <i class="fas fa-sticky-note"></i> Customer Notes
+            </h4>
+            <p class="text-xs text-amber-800 italic leading-relaxed">"{{ order.notes }}"</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Stockpile Management | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex justify-between items-center">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Global Stockpile Management</h1>
+        <p class="text-sm text-slate-500">Overview of all customer items held in storage and their accrued fees.</p>
+    </div>
+    <div class="flex gap-4">
+        <div class="bg-blue-50 px-4 py-2 rounded-lg border border-blue-100">
+            <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest leading-none mb-1">Total Held</p>
+            <p class="text-lg font-bold text-blue-600">{{ stockpiles.count }} Items</p>
+        </div>
+        <div class="bg-amber-50 px-4 py-2 rounded-lg border border-amber-100">
+            <p class="text-[10px] font-bold text-amber-400 uppercase tracking-widest leading-none mb-1">Unpaid Fees</p>
+            <p class="text-lg font-bold text-amber-600">₦{{ total_unpaid_fees|floatformat:0 }}</p>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest">
+                    <th class="px-6 py-4 font-bold">Stored Since</th>
+                    <th class="px-6 py-4 font-bold">Customer</th>
+                    <th class="px-6 py-4 font-bold">Product</th>
+                    <th class="px-6 py-4 font-bold">Days</th>
+                    <th class="px-6 py-4 font-bold">Fees</th>
+                    <th class="px-6 py-4 font-bold text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for s in stockpiles %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-4 text-slate-500">{{ s.stored_since|date:"M d, Y" }}</td>
+                    <td class="px-6 py-4">
+                        <span class="font-bold text-slate-700">{{ s.user.get_full_name|default:s.user.username }}</span>
+                        <p class="text-[10px] text-slate-400">{{ s.user.email }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-slate-600">{{ s.order_item.jewellery.name }}</span>
+                    </td>
+                    <td class="px-6 py-4 font-mono">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold 
+                            {% if s.days_stored > 30 %}bg-red-50 text-red-600{% else %}bg-emerald-50 text-emerald-600{% endif %}">
+                            {{ s.days_stored }} days
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-bold text-slate-800">₦{{ s.current_fee|floatformat:0 }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded hover:bg-[var(--ims-accent)] hover:text-white transition text-xs font-bold uppercase tracking-tight">
+                            Release
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">No active stockpiles.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

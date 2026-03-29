@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body { font-family: Georgia, serif; background: #fdf8f2; margin: 0; padding: 40px 20px; }
+  .container { max-width: 600px; margin: 0 auto; background: white; border: 1px solid #e5e7eb; }
+  .header { background: #1a1a1a; padding: 32px; text-align: center; }
+  .logo { color: white; font-size: 28px; font-weight: bold; }
+  .logo span { color: #c9a84c; }
+  .body { padding: 40px 32px; }
+  h1 { color: #1a1a1a; font-size: 24px; margin: 0 0 16px; }
+  p { color: #6b7280; line-height: 1.7; margin: 0 0 16px; }
+  .btn { display: inline-block; background: #c9a84c; color: white; padding: 14px 32px; text-decoration: none; font-family: sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; margin: 8px 0; }
+  .footer { background: #f9fafb; border-top: 1px solid #e5e7eb; padding: 20px 32px; text-align: center; font-size: 12px; color: #9ca3af; }
+  .features { margin: 24px 0; }
+  .feature { display: flex; align-items: flex-start; margin-bottom: 16px; }
+  .feature-icon { width: 40px; height: 40px; background: #fdf8f2; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; margin-right: 12px; }
+  .feature h3 { margin: 0 0 4px; font-size: 14px; color: #1a1a1a; font-family: sans-serif; }
+  .feature p { margin: 0; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">AURA<span>.</span></div>
+  </div>
+  <div class="body">
+    <h1>Welcome to AURA!</h1>
+    <p>Hi {{ user.first_name|default:user.username }},</p>
+    <p>We're thrilled to have you join the AURA family. Your account has been created and you're all set to explore our exquisite jewellery collection.</p>
+
+    <div class="features">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="padding: 8px 0;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width: 44px; vertical-align: top;">
+                  <div style="width: 36px; height: 36px; background: #fdf8f2; border-radius: 8px; text-align: center; line-height: 36px; font-size: 16px;">💎</div>
+                </td>
+                <td style="padding-left: 8px; vertical-align: top;">
+                  <p style="margin: 0 0 2px; font-weight: bold; color: #1a1a1a; font-family: sans-serif; font-size: 13px;">Curated Collections</p>
+                  <p style="margin: 0; font-size: 12px;">Browse our handpicked jewellery pieces and exclusive collections.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width: 44px; vertical-align: top;">
+                  <div style="width: 36px; height: 36px; background: #fdf8f2; border-radius: 8px; text-align: center; line-height: 36px; font-size: 16px;">📦</div>
+                </td>
+                <td style="padding-left: 8px; vertical-align: top;">
+                  <p style="margin: 0 0 2px; font-weight: bold; color: #1a1a1a; font-family: sans-serif; font-size: 13px;">Order Tracking</p>
+                  <p style="margin: 0; font-size: 12px;">Track your orders in real-time from your personal dashboard.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width: 44px; vertical-align: top;">
+                  <div style="width: 36px; height: 36px; background: #fdf8f2; border-radius: 8px; text-align: center; line-height: 36px; font-size: 16px;">❤️</div>
+                </td>
+                <td style="padding-left: 8px; vertical-align: top;">
+                  <p style="margin: 0 0 2px; font-weight: bold; color: #1a1a1a; font-family: sans-serif; font-size: 13px;">Wishlist & Favourites</p>
+                  <p style="margin: 0; font-size: 12px;">Save your favourite items and get notified on special deals.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="text-align:center; margin: 32px 0;">
+      <a href="{{ shop_url }}" class="btn">Start Shopping</a>
+    </p>
+    <p style="font-size: 12px; color: #9ca3af;">If you have any questions, reply to this email or contact our support team.</p>
+  </div>
+  <div class="footer">© AURA Jewellery. All rights reserved.</div>
+</div>
+</body>
+</html>

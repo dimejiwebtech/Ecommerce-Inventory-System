@@ -1,0 +1,84 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}
+    {% if title %}{{ title }}{% else %}Announcement Form{% endif %} | AURA IMS
+{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">
+            {% if title %}{{ title }}{% else %}Announcement{% endif %}
+        </h1>
+        <p class="text-sm text-slate-500">Configure global broadcast messages to site visitors.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_announcement_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Announcements
+    </a>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm max-w-2xl mx-auto overflow-hidden">
+    <div class="p-6 border-b border-slate-50 bg-slate-50/50 flex items-center gap-3">
+        <i class="fas fa-bullhorn text-[var(--ims-accent)] text-lg"></i>
+        <h3 class="font-bold text-slate-800">Announcement Details</h3>
+    </div>
+    
+    <div class="p-6">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Text Content -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Display Text <span class="text-rose-500">*</span></label>
+                {{ form.text }}
+                {% if form.text.errors %}
+                <p class="text-rose-500 text-xs mt-1 font-medium">{{ form.text.errors.0 }}</p>
+                {% endif %}
+                <p class="text-[10px] text-slate-400 mt-1">Maximum 500 characters. Keep it brief and engaging.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-slate-50 rounded-lg border border-slate-100">
+                <!-- Action Link -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Target URL (Optional)</label>
+                    {{ form.link }}
+                    {% if form.link.errors %}
+                    <p class="text-rose-500 text-xs mt-1 font-medium">{{ form.link.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-[10px] text-slate-400 mt-1">Example: https://yoursite.com/shop/sale</p>
+                </div>
+                
+                <!-- Link Label -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2">Link Button Text</label>
+                    {{ form.link_label }}
+                    {% if form.link_label.errors %}
+                    <p class="text-rose-500 text-xs mt-1 font-medium">{{ form.link_label.errors.0 }}</p>
+                    {% endif %}
+                    <p class="text-[10px] text-slate-400 mt-1">Example: "Shop Now" or "Learn More"</p>
+                </div>
+            </div>
+            
+            <!-- Active Status -->
+            <div class="pt-4 border-t border-slate-100">
+                <label class="flex items-center gap-3 cursor-pointer p-4 bg-white border border-slate-200 rounded-lg hover:border-[var(--ims-accent)] transition">
+                    {{ form.is_active }}
+                    <div>
+                        <span class="block text-sm font-bold text-slate-800">Publish Immediately</span>
+                        <span class="block text-xs text-slate-500">Enable this to make the banner visible on the site frontend.</span>
+                    </div>
+                </label>
+            </div>
+            
+            <div class="pt-6 mt-6 border-t border-slate-100 flex justify-end gap-3">
+                <a href="{% url 'catalogue:ims_announcement_list' %}" class="px-6 py-2.5 rounded-lg border border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-[var(--ims-accent)] text-white px-8 py-2.5 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-sm">
+                    Save Announcement
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

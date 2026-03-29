@@ -1,0 +1,123 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Online Orders | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Online Orders</h1>
+        <p class="text-sm text-slate-500">Manage customer orders and fulfillment status.</p>
+    </div>
+    <div class="flex gap-3">
+        <form method="get" class="relative group">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[var(--ims-accent)] transition-colors"></i>
+            <input type="text" name="q" value="{{ q|default:'' }}" placeholder="Search orders..." 
+                   class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[var(--ims-accent)] w-64 shadow-sm bg-white">
+            {% if status_filter %}<input type="hidden" name="status" value="{{ status_filter }}">{% endif %}
+            {% if sort_by %}<input type="hidden" name="sort" value="{{ sort_by }}">{% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Status Tabs & Sorting -->
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden mb-8">
+    <div class="p-4 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex gap-2 p-1 bg-slate-100 rounded-lg overflow-x-auto no-scrollbar">
+            <a href="{% url 'orders_ims:ims_order_list' %}" 
+               class="px-4 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap
+               {% if not status_filter %}bg-white text-slate-800 shadow-sm{% else %}text-slate-500 hover:text-slate-700{% endif %}">
+                All Orders
+            </a>
+            {% for code, label in status_choices %}
+            <a href="?status={{ code }}{% if q %}&q={{ q }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}" 
+               class="px-4 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap
+               {% if status_filter == code %}bg-white text-slate-800 shadow-sm{% else %}text-slate-500 hover:text-slate-700{% endif %}">
+                {{ label }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sort By:</span>
+            <select onchange="window.location.href=this.value" class="bg-transparent border-none text-xs font-bold text-slate-600 focus:ring-0 cursor-pointer">
+                <option value="?sort=-placed_at{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" {% if sort_by == '-placed_at' %}selected{% endif %}>Newest First</option>
+                <option value="?sort=placed_at{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" {% if sort_by == 'placed_at' %}selected{% endif %}>Oldest First</option>
+                <option value="?sort=-grand_total{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" {% if sort_by == '-grand_total' %}selected{% endif %}>Highest Total</option>
+                <option value="?sort=status{% if q %}&q={{ q }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}" {% if sort_by == 'status' %}selected{% endif %}>Status</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="text-slate-500 text-[10px] uppercase tracking-widest font-bold">
+                    <th class="px-6 py-4">Order Details</th>
+                    <th class="px-6 py-4">Customer</th>
+                    <th class="px-6 py-4 text-right">Total</th>
+                    <th class="px-6 py-4 text-center">Payment</th>
+                    <th class="px-6 py-4 text-center">Fulfillment</th>
+                    <th class="px-6 py-4 text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for order in orders %}
+                <tr class="hover:bg-slate-50/50 transition group">
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-800">#{{ order.order_number }}</span>
+                            <span class="text-[10px] text-slate-400 font-medium tracking-tight">{{ order.placed_at|date:"M d, Y @ H:i" }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-700">{{ order.customer_name }}</span>
+                            <span class="text-[10px] text-slate-400">{{ order.customer_email }}</span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <span class="font-black text-slate-800">₦{{ order.grand_total|floatformat:2 }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter
+                            {% if order.payment_status == 'paid' %}bg-emerald-50 text-emerald-600 border border-emerald-100
+                            {% elif order.payment_status == 'failed' %}bg-rose-50 text-rose-600 border border-rose-100
+                            {% else %}bg-amber-50 text-amber-600 border border-amber-100{% endif %}">
+                            {{ order.get_payment_status_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tighter
+                            {% if order.status == 'delivered' %}bg-emerald-50 text-emerald-600
+                            {% elif order.status == 'cancelled' %}bg-slate-100 text-slate-500
+                            {% elif order.status == 'pending' %}bg-amber-50 text-amber-600
+                            {% else %}bg-blue-50 text-blue-600{% endif %}">
+                            {{ order.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <a href="{% url 'orders_ims:ims_order_detail' order.ref_id %}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 hover:border-slate-300 transition">
+                            <i class="fas fa-eye text-[10px]"></i>View
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="px-6 py-16 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300">
+                                <i class="fas fa-shopping-basket text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-600">No orders found</p>
+                                <p class="text-xs text-slate-400">Try adjusting your filters or search query.</p>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}Stock Movements | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-800">Stock Movement Inventory Audit</h1>
+    <p class="text-sm text-slate-500">Track every addition and deduction from your inventory levels.</p>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest">
+                    <th class="px-6 py-4 font-bold">Date & Time</th>
+                    <th class="px-6 py-4 font-bold">Product</th>
+                    <th class="px-6 py-4 font-bold">Change</th>
+                    <th class="px-6 py-4 font-bold">Reason</th>
+                    <th class="px-6 py-4 font-bold">User</th>
+                    <th class="px-6 py-4 font-bold">Note</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for movement in movements %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-4 text-slate-500 border-r border-slate-50">{{ movement.created_at|date:"M d, Y H:i" }}</td>
+                    <td class="px-6 py-4">
+                        <span class="font-bold text-slate-700">{{ movement.jewellery.name }}</span>
+                        <p class="text-[10px] text-slate-400">SKU: {{ movement.jewellery.sku }}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded font-mono text-xs font-bold
+                            {% if movement.change > 0 %}bg-emerald-50 text-emerald-600{% else %}bg-red-50 text-red-600{% endif %}">
+                            {% if movement.change > 0 %}+{% endif %}{{ movement.change }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-xs font-bold uppercase tracking-tight text-slate-500">{{ movement.get_reason_display }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-slate-600">
+                        {{ movement.user.username|default:"System" }}
+                    </td>
+                    <td class="px-6 py-4 text-slate-400 text-xs italic">
+                        {{ movement.note|default:"—" }}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="px-6 py-12 text-center text-slate-400 italic">No stock movements recorded.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

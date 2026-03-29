@@ -1,0 +1,123 @@
+{% extends 'ims/base.html' %}
+{% load static %}
+
+{% block title %}Products | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">Jewellery Inventory</h1>
+        <p class="text-sm text-slate-500">Manage your product catalogue and stock levels.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_product_add' %}" class="bg-[var(--ims-accent)] text-white px-4 py-2 rounded shadow-sm text-sm font-medium hover:opacity-90 transition flex items-center gap-2">
+        <i class="fas fa-plus"></i> Add Product
+    </a>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="p-6 border-b border-slate-50 bg-slate-50/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="relative flex-1 max-w-md">
+            <input type="text" placeholder="Search products by name or SKU..." 
+                   class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-[var(--ims-accent)]">
+            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        </div>
+        <div class="flex gap-2">
+            <select class="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-white text-slate-600 focus:outline-none focus:border-[var(--ims-accent)]">
+                <option>All Categories</option>
+            </select>
+            <select class="border border-slate-200 rounded-lg text-sm px-3 py-2 bg-white text-slate-600 focus:outline-none focus:border-[var(--ims-accent)]">
+                <option>Any Stock</option>
+                <option>Low Stock</option>
+                <option>Out of Stock</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-slate-50 text-slate-500 text-[10px] uppercase tracking-widest text-left">
+                    <th class="px-6 py-4 font-bold">Product</th>
+                    <th class="px-6 py-4 font-bold">SKU</th>
+                    <th class="px-6 py-4 font-bold">Category</th>
+                    <th class="px-6 py-4 font-bold text-right">Stock</th>
+                    <th class="px-6 py-4 font-bold text-right">Retail</th>
+                    <th class="px-6 py-4 font-bold text-right">Wholesale</th>
+                    <th class="px-6 py-4 font-bold">Status</th>
+                    <th class="px-6 py-4 font-bold text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-50">
+                {% for product in products %}
+                <tr class="hover:bg-slate-50/50 transition">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-md bg-slate-100 overflow-hidden border border-slate-200 flex-shrink-0">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}" class="w-full h-full object-cover">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-slate-300"><i class="fas fa-gem"></i></div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-800">{{ product.name }}</p>
+                                <p class="text-[10px] text-slate-400">{{ product.collection.name|default:"No Collection" }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-slate-500 font-mono text-xs">{{ product.sku }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-medium">{{ product.category.name|default:"Uncategorized" }}</span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-medium">
+                        <span class="{% if product.stock <= product.low_stock_threshold %}text-amber-600{% endif %} 
+                                     {% if product.stock == 0 %}text-red-600{% endif %}">
+                            {{ product.stock }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right font-bold text-slate-700 whitespace-nowrap">₦{{ product.retail_price|floatformat:0 }}</td>
+                    <td class="px-6 py-4 text-right font-bold text-slate-700 whitespace-nowrap">₦{{ product.wholesale_price|floatformat:0 }}</td>
+                    <td class="px-6 py-4">
+                        {% if product.is_active %}
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 uppercase bg-emerald-50 px-2 py-0.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Active
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase bg-slate-50 px-2 py-0.5 rounded-full">
+                            <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span> Draft
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <a href="{% url 'catalogue:ims_product_edit' product.pk %}" class="p-1.5 text-slate-400 hover:text-[var(--ims-accent)] transition">
+                                <i class="fas fa-edit text-base"></i>
+                            </a>
+                            <a href="{% url 'catalogue:ims_product_delete' product.pk %}" class="p-1.5 text-slate-400 hover:text-red-500 transition">
+                                <i class="fas fa-trash-alt text-base"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="px-6 py-20 text-center">
+                        <div class="mb-4 text-slate-200"><i class="fas fa-gem text-5xl"></i></div>
+                        <p class="text-slate-500 font-medium">No products found in inventory.</p>
+                        <a href="{% url 'catalogue:ims_product_add' %}" class="text-[var(--ims-accent)] text-sm hover:underline mt-2 inline-block">Add your first product</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination placeholder -->
+    <div class="p-6 border-t border-slate-50 flex items-center justify-between">
+        <p class="text-xs text-slate-500 italic">Showing {{ products|length }} products</p>
+        <div class="flex gap-1">
+            <button disabled class="w-8 h-8 flex items-center justify-center rounded border border-slate-100 text-slate-300">1</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

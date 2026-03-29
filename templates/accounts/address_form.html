@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Add Address | AURA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex flex-col md:flex-row gap-10">
+
+        <!-- Sidebar -->
+        {% include 'accounts/partials/dashboard_sidebar.html' %}
+
+        <!-- Main -->
+        <div class="flex-1 min-w-0">
+            <div class="mb-8">
+                <h1 class="font-serif text-2xl text-shop-text">Add New Address</h1>
+                <p class="text-shop-muted text-sm mt-1">Fill in the details below to save a new shipping address.</p>
+            </div>
+
+            <div class="bg-white border border-shop-border p-8 max-w-2xl">
+                <form method="POST" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Full Name *</label>
+                            {{ form.full_name }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Phone Number *</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Email (Optional)</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Address Line 1 *</label>
+                        {{ form.address_line1 }}
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Address Line 2 (Optional)</label>
+                        {{ form.address_line2 }}
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">City *</label>
+                            {{ form.city }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">State *</label>
+                            {{ form.state }}
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-widest text-shop-text mb-2">Postal Code</label>
+                            {{ form.postal_code }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            {{ form.is_default }}
+                            <span class="text-sm text-shop-text">Set as default shipping address</span>
+                        </label>
+                    </div>
+
+                    <div class="pt-6 flex items-center gap-4">
+                        <button type="submit" 
+                                class="bg-shop-text hover:bg-shop-gold text-white px-8 py-3.5 text-xs font-bold uppercase tracking-widest transition">
+                            Save Address
+                        </button>
+                        <a href="{% url 'accounts:address_list' %}" class="text-xs text-shop-muted hover:text-shop-text transition uppercase tracking-widest font-bold">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

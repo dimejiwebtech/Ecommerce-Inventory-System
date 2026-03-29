@@ -1,0 +1,47 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}{{ title }} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">{{ title }}</h1>
+        <p class="text-sm text-slate-500">Record supplier details for procurement tracking.</p>
+    </div>
+    <a href="{% url 'catalogue:ims_vendor_list' %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Vendors
+    </a>
+</div>
+
+<div class="max-w-2xl bg-white p-8 rounded-xl border border-slate-100 shadow-sm">
+    <form method="post" class="space-y-6">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Company / Vendor Name</label>
+                {{ form.name }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Contact Person</label>
+                {{ form.contact_person }}
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Phone Number</label>
+                {{ form.phone }}
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Email Address</label>
+                {{ form.email }}
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Office Address</label>
+                {{ form.address }}
+            </div>
+        </div>
+
+        <button type="submit" class="w-full bg-slate-800 text-white py-3 rounded-lg font-bold tracking-widest uppercase hover:bg-slate-900 transition-all shadow-md">
+            Save Vendor Info
+        </button>
+    </form>
+</div>
+{% endblock %}

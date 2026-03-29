@@ -1,0 +1,77 @@
+{% extends 'ims/base.html' %}
+
+{% block title %}{% if shipment %}Edit Shipment{% else %}Create Shipment{% endif %} | AURA IMS{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-slate-800">
+            {% if shipment %}Edit Shipment{% else %}Create Shipment{% endif %}
+        </h1>
+        <p class="text-sm text-slate-500">For Order <span class="font-bold text-[var(--ims-accent)]">#{{ order.order_number }}</span></p>
+    </div>
+    <a href="{% url 'orders_ims:ims_order_detail' order.ref_id %}" class="text-slate-400 hover:text-slate-600 transition text-sm font-medium flex items-center gap-2">
+        <i class="fas fa-arrow-left"></i> Back to Order Detail
+    </a>
+</div>
+
+<div class="max-w-2xl">
+    <div class="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Carrier</label>
+                    <input type="text" name="carrier" value="{{ shipment.carrier|default:'' }}" 
+                           placeholder="e.g., DHL, FedEx, GIGM"
+                           class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:border-[var(--ims-accent)] transition text-sm">
+                </div>
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Tracking Number</label>
+                    <input type="text" name="tracking_number" value="{{ shipment.tracking_number|default:'' }}" 
+                           placeholder="Enter tracking code"
+                           class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:border-[var(--ims-accent)] transition text-sm font-mono">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Shipment Status</label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {% for code, label in status_choices %}
+                    <label class="relative flex items-center justify-center p-3 border rounded-lg cursor-pointer transition-all hover:bg-slate-50
+                        {% if shipment.status == code or (not shipment and code == 'preparing') %}border-[var(--ims-accent)] bg-green-50/30{% else %}border-slate-100{% endif %}">
+                        <input type="radio" name="status" value="{{ code }}" class="sr-only"
+                               {% if shipment.status == code or (not shipment and code == 'preparing') %}checked{% endif %}>
+                        <span class="text-xs font-bold uppercase tracking-tighter {% if shipment.status == code or (not shipment and code == 'preparing') %}text-[var(--ims-accent)]{% else %}text-slate-500{% endif %}">
+                            {{ label }}
+                        </span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Internal Notes</label>
+                <textarea name="notes" rows="4" 
+                          placeholder="Internal shipping notes..."
+                          class="w-full border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:border-[var(--ims-accent)] transition text-sm">{{ shipment.notes|default:'' }}</textarea>
+            </div>
+
+            <div class="pt-6 border-t border-slate-50 flex items-center gap-4">
+                <button type="submit" class="bg-[var(--ims-accent)] text-white px-8 py-3.5 rounded-lg font-bold text-sm hover:opacity-90 transition shadow-md">
+                    {% if shipment %}Update Shipment{% else %}Create Shipment{% endif %}
+                </button>
+                <a href="{% url 'orders_ims:ims_order_detail' order.ref_id %}" class="text-slate-400 hover:text-slate-600 font-bold text-xs uppercase tracking-widest">Cancel</a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="mt-6 p-4 bg-blue-50/50 rounded-lg border border-blue-100 flex gap-3 text-blue-700">
+        <i class="fas fa-info-circle mt-0.5 opacity-50"></i>
+        <div class="text-xs leading-relaxed italic">
+            <strong>Pro Tip:</strong> Setting status to <b>Shipped</b> or <b>In Transit</b> will automatically update the master Order status to "Shipped". Setting status to <b>Delivered</b> will update the order to "Delivered".
+        </div>
+    </div>
+</div>
+{% endblock %}

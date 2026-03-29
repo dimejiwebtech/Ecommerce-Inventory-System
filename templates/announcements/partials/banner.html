@@ -1,0 +1,11 @@
+{% if announcement %}
+<div class="bg-shop-text text-white text-center text-xs py-2 px-4 font-medium tracking-wide">
+    {{ announcement.text }}
+    {% if announcement.link %}
+        &nbsp;—&nbsp;
+        <a href="{{ announcement.link }}" class="underline hover:text-shop-gold transition">
+            {{ announcement.link_label|default:"Learn more" }}
+        </a>
+    {% endif %}
+</div>
+{% endif %}
