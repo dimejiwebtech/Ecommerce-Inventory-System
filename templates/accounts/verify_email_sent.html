@@ -12,7 +12,7 @@
             Click the link to activate your account. It expires in 24 hours.
             {% if resent %}<br><span class="text-status-inStock font-medium">New link sent!</span>{% endif %}
         </p>
-        <form method="post" action="{% url 'resend_verification' %}">
+        <form method="post" action="{% url 'accounts:resend_verification' %}">
             {% csrf_token %}
             <input type="hidden" name="email" value="{{ email }}">
             <button type="submit"

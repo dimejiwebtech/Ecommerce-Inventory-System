@@ -7,7 +7,7 @@
             <h1 style="font-family: Georgia, serif; font-size: 28px; margin: 0; letter-spacing: 2px;">AURA<span style="color: #c9a84c;">.</span></h1>
         </div>
         <h2 style="font-family: Georgia, serif; font-size: 22px; text-align: center; margin-bottom: 30px;">Welcome to the Family</h2>
-        <p style="font-size: 16px; line-height: 1.6;">Dear {{ customer.first_name }},</p>
+        <p style="font-size: 16px; line-height: 1.6;">Dear {{ user.first_name|default:user.username }},</p>
         <p style="font-size: 16px; line-height: 1.6;">Thank you for creating an account with AURA. You now have access to faster checkouts, order tracking, and our exclusive 30-day free stockpile service.</p>
         <div style="text-align: center; margin: 40px 0;">
             <a href="https://yourdomain.com/shop" style="background-color: #1a1a1a; color: #ffffff; text-decoration: none; padding: 14px 28px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Explore the Collection</a>

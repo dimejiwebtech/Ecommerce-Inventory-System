@@ -8,7 +8,7 @@
         </div>
         <h1 class="font-serif text-3xl text-shop-text mb-3">Link Expired</h1>
         <p class="text-shop-muted text-sm mb-6">Your verification link has expired (24h limit).<br>Request a new one below.</p>
-        <form method="post" action="{% url 'resend_verification' %}">
+        <form method="post" action="{% url 'accounts:resend_verification' %}">
             {% csrf_token %}
             <input type="hidden" name="email" value="{{ user.email }}">
             <button type="submit"
