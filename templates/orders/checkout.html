@@ -22,7 +22,7 @@
         <div class="flex-1 lg:pr-12 lg:border-r border-shop-border">
             <h1 class="font-serif text-3xl text-shop-text mb-8">Checkout</h1>
 
-            <form method="POST" action="{% url 'checkout' %}">
+            <form method="POST" action="{% url 'orders:checkout' %}">
                 {% csrf_token %}
 
                 <!-- Contact -->
