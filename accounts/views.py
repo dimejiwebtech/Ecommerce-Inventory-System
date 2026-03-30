@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from cart.models import Cart, CartItem
 from .forms import StaffUserForm
-
+from django.urls import reverse
 from accounts.decorators import staff_required
 from accounts.emails import (
     send_otp_email,
@@ -127,10 +127,9 @@ def resend_verification(request):
 
 
 def get_login_redirect_url(user):
-    """Determine where to send the user after login based on their role."""
-    if user.is_superuser or user.is_staff or user.role in ['admin', 'manager', 'staff']:
-        return 'reports:ims_dashboard'
-    return 'accounts:customer_dashboard'
+    if getattr(user, 'is_superuser', False) or getattr(user, 'is_staff', False) or getattr(user, 'role', '') in ['admin', 'manager', 'staff']:
+        return reverse('reports:ims_dashboard')
+    return reverse('accounts:customer_dashboard')
 
 
 def login_view(request):

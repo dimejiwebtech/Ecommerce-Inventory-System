@@ -182,10 +182,7 @@ GMAIL_CLIENT_SECRET_PATH = config('GMAIL_CLIENT_SECRET_PATH', default='')
 
 # Dynamic Site URL for Vercel
 VERCEL_ENV_URL = config('VERCEL_URL', default=None)
-if VERCEL_ENV_URL:
-    SITE_URL = f"https://{VERCEL_ENV_URL}"
-else:
-    SITE_URL = config('SITE_URL', default='http://127.0.0.1:8000')
+SITE_URL = config('SITE_URL', default=f"https://{VERCEL_ENV_URL}" if VERCEL_ENV_URL else 'http://127.0.0.1:8000')
 
 CSRF_TRUSTED_ORIGINS = [f"https://{VERCEL_ENV_URL}"] if VERCEL_ENV_URL else ['https://*.vercel.app']
 

@@ -23,12 +23,14 @@ def get_or_create_cart(request):
 def _cart_count_response(cart, request):
     if request.headers.get('HX-Request'):
         count = cart.item_count()
-        return HttpResponse(
+        response = HttpResponse(
             f'<span id="cart-count" '
-            f'class="absolute -top-2 -right-2 bg-shop-text text-white text-[10px] '
+            f'class="absolute -top-1.5 -right-2.5 bg-shop-gold text-white text-[10px] '
             f'font-bold h-4 w-4 rounded-full flex items-center justify-center '
-            f'group-hover:bg-shop-gold transition-colors">{count}</span>'
+            f'shadow-sm">{count}</span>'
         )
+        response['HX-Trigger'] = 'open-cart'
+        return response
     return redirect('cart_detail')
 
 
