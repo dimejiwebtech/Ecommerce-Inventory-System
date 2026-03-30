@@ -101,9 +101,11 @@ class GmailCredentialsManager:
         )
     
     def generate_new_token(self):
-        if not os.path.exists(self.client_secret_path):
+        # We only strictly need the file when manually generating a token locally.
+        if not self.client_secret_path or not os.path.exists(self.client_secret_path):
             raise FileNotFoundError(
-                f"Client secret file not found: {self.client_secret_path}"
+                f"Client secret file not found at: {self.client_secret_path}. "
+                "This file is required only for original token generation on your local machine."
             )
         
         flow = InstalledAppFlow.from_client_secrets_file(
