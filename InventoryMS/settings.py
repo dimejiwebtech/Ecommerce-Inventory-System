@@ -158,11 +158,11 @@ STORAGES = {
     },
 }
 
-# Generate the public Supabase URL format
+# Generate the public Supabase URL format for link generation
 SUPABASE_PROJECT_ID = AWS_S3_ENDPOINT_URL.split('//')[1].split('.')[0] if AWS_S3_ENDPOINT_URL else ''
-MEDIA_URL = f"https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}/"
+AWS_S3_CUSTOM_DOMAIN = f"{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}"
 
-
+MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
 MEDIA_ROOT = BASE_DIR / 'media'
 
 
