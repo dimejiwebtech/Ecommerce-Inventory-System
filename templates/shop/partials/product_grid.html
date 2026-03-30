@@ -4,7 +4,7 @@
     <a href="{% url 'product_detail' product.slug %}" class="group block">
         <div class="relative overflow-hidden aspect-[4/5] bg-white border border-shop-border mb-3">
             {% if product.primary_image %}
-            <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+            <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}" crossorigin="anonymous"
                  class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
             {% else %}
             <div class="w-full h-full flex items-center justify-center bg-gray-50">

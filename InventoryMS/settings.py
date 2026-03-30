@@ -142,6 +142,13 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
 AWS_QUERYSTRING_AUTH = False  # Disable signed URLs for public assets
+AWS_S3_SIGNATURE_VERSION = 's3v4' 
+
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+    'ACL': 'public-read',
+    'AccessControlAllowOrigin': '*',
+}
 
 STORAGES = {
     "default": {
