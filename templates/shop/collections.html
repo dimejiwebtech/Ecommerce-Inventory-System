@@ -19,7 +19,7 @@
         {% for col in collections %}
         <a href="{% url 'collection_detail' col.slug %}" class="group relative overflow-hidden aspect-video block">
             {% if col.banner %}
-            <img src="{{ col.banner.url }}" alt="{{ col.name }}"
+            <img src="{{ col.banner.url }}" alt="{{ col.name }}" crossorigin="anonymous"
                  class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
             {% else %}
             <div class="w-full h-full bg-gradient-to-br from-shop-text to-gray-700"></div>

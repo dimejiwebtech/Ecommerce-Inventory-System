@@ -44,7 +44,7 @@
              class="absolute inset-0 w-full h-full">
             
             <!-- Background Image -->
-            <img :src="slide.image" :alt="slide.title" class="absolute inset-0 w-full h-full object-cover object-center" />
+            <img :src="slide.image" :alt="slide.title" crossorigin="anonymous" class="absolute inset-0 w-full h-full object-cover object-center" />
             
             <!-- Gradient Overlay -->
             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
@@ -102,7 +102,7 @@
             <a href="{% url 'shop_list' %}?category={{ category.slug }}" class="min-w-[45%] sm:min-w-[30%] md:min-w-0 snap-start group block text-center">
                 <div class="relative overflow-hidden rounded-full aspect-square mb-3 bg-shop-bg border border-shop-border p-1.5 mx-auto w-24 h-24 sm:w-32 sm:h-32 md:w-full md:h-full">
                     {% if category.image %}
-                    <img src="{{ category.image.url }}" alt="{{ category.name }}"
+                    <img src="{{ category.image.url }}" alt="{{ category.name }}" crossorigin="anonymous"
                          class="object-cover w-full h-full rounded-full transform group-hover:scale-110 transition duration-700">
                     {% else %}
                     <div class="w-full h-full rounded-full bg-gradient-to-br from-shop-gold/10 to-shop-gold/30 flex items-center justify-center">
@@ -133,7 +133,7 @@
             <a href="{% url 'product_detail' product.slug %}" class="group block bg-white border border-shop-border/50 hover:shadow-lg transition-all duration-300">
                 <div class="relative overflow-hidden aspect-[1/1] bg-gray-50 flex items-center justify-center">
                     {% if product.primary_image %}
-                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                    <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}" crossorigin="anonymous"
                          class="object-cover w-full h-full transform group-hover:scale-110 transition duration-700">
                     {% else %}
                     <i class="fas fa-gem text-3xl text-shop-gold/20"></i>
@@ -176,7 +176,7 @@
             {% for col in collections %}
             <a href="{% url 'collection_detail' col.slug %}" class="group relative overflow-hidden aspect-[16/7] md:aspect-[16/8] block">
                 {% if col.banner %}
-                <img src="{{ col.banner.url }}" alt="{{ col.name }}"
+                <img src="{{ col.banner.url }}" alt="{{ col.name }}" crossorigin="anonymous"
                      class="object-cover w-full h-full transform group-hover:scale-105 transition duration-1000">
                 {% else %}
                 <div class="w-full h-full bg-slate-100"></div>

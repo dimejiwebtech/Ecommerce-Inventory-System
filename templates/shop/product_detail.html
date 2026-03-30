@@ -26,6 +26,7 @@
             <div class="aspect-square bg-white border border-shop-border overflow-hidden mb-3">
                 {% if product.primary_image %}
                 <img :src="activeImg" alt="{{ product.name }}"
+                     crossorigin="anonymous"
                      class="w-full h-full object-cover"
                      src="{{ product.primary_image.image.url }}">
                 {% else %}
@@ -41,6 +42,7 @@
                 <button @click="activeImg = '{{ img.image.url }}'"
                         class="aspect-square overflow-hidden border border-shop-border hover:border-shop-gold transition">
                     <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}"
+                         crossorigin="anonymous"
                          class="w-full h-full object-cover">
                 </button>
                 {% endfor %}
@@ -248,6 +250,7 @@
                 <div class="relative overflow-hidden aspect-[4/5] bg-white border border-shop-border mb-3">
                     {% if item.primary_image %}
                     <img src="{{ item.primary_image.image.url }}" alt="{{ item.name }}"
+                         crossorigin="anonymous"
                          class="object-cover w-full h-full transform group-hover:scale-105 transition duration-700">
                     {% else %}
                     <div class="w-full h-full flex items-center justify-center bg-gray-50">
