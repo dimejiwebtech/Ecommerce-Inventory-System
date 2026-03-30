@@ -16,11 +16,13 @@ class Command(BaseCommand):
                 password='Testing123@',
                 first_name='Admin',
                 last_name='User',
-                role='admin'
+                role='admin',
+                is_email_verified=True
             )
             self.stdout.write(self.style.SUCCESS(f'Created Superuser: {admin_email} / Testing123@'))
         else:
-            self.stdout.write(f'Admin {admin_email} already exists.')
+            CustomUser.objects.filter(email=admin_email).update(is_email_verified=True, is_staff=True, is_superuser=True)
+            self.stdout.write(f'Admin {admin_email} updated and verified.')
 
         # Customer Account
         customer_email = 'customer@aura.com'
