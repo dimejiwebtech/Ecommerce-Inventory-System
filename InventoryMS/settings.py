@@ -141,6 +141,7 @@ AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='us-east-1') # Supabas
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
+AWS_QUERYSTRING_AUTH = False  # Disable signed URLs for public assets
 
 STORAGES = {
     "default": {
@@ -151,7 +152,9 @@ STORAGES = {
     },
 }
 
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/" if AWS_STORAGE_BUCKET_NAME else '/media/'
+# Generate the public Supabase URL format
+SUPABASE_PROJECT_ID = AWS_S3_ENDPOINT_URL.split('//')[1].split('.')[0] if AWS_S3_ENDPOINT_URL else ''
+MEDIA_URL = f"https://{SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/{AWS_STORAGE_BUCKET_NAME}/"
 
 
 MEDIA_ROOT = BASE_DIR / 'media'
