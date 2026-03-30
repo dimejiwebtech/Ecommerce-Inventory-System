@@ -1,5 +1,7 @@
 import os
+import dj_database_url
 from pathlib import Path
+from decouple import config
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,9 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Security
 SECRET_KEY = 'django-insecure-g_n2+2bznu6e@1wel!i(&-4tp86_7lop5395ww+i4x%9*7^old'
 
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1', '*']
+CSRF_TRUSTED_ORIGINS = ['https://*.vercel.app']
 
 
 # Applications
@@ -46,6 +49,7 @@ INSTALLED_APPS = [
 # Middleware
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,10 +88,11 @@ TEMPLATES = [
 
 # Database
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=config('DATABASE_URL', default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        conn_max_age=600,
+        ssl_require=True if not config('DEBUG', default=True, cast=bool) else False,
+    )
 }
 
 
@@ -124,6 +129,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -134,7 +140,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Email — Gmail API
-from decouple import config  # noqa: E402
+# Email — Gmail API
 
 EMAIL_BACKEND = 'utils.gmail_backend.GmailAPIBackend'
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='AURA Jewellery <noreply@aurajewellery.com>')
