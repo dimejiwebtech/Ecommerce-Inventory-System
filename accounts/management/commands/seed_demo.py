@@ -11,6 +11,7 @@ class Command(BaseCommand):
         admin_email = 'admin@aura.com'
         if not CustomUser.objects.filter(email=admin_email).exists():
             CustomUser.objects.create_superuser(
+                username='admin',
                 email=admin_email,
                 password='Testing123@',
                 first_name='Admin',
@@ -25,6 +26,7 @@ class Command(BaseCommand):
         customer_email = 'customer@aura.com'
         if not CustomUser.objects.filter(email=customer_email).exists():
             CustomUser.objects.create_user(
+                username='demo_customer',
                 email=customer_email,
                 password='Testing123@',
                 first_name='Demo',
