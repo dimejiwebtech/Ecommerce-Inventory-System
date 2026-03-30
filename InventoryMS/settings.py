@@ -147,7 +147,6 @@ AWS_S3_SIGNATURE_VERSION = 's3v4'
 AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
     'ACL': 'public-read',
-    'AccessControlAllowOrigin': '*',
 }
 
 STORAGES = {
