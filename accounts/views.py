@@ -253,6 +253,9 @@ def logout_view(request):
 
 @login_required
 def customer_dashboard(request):
+    if getattr(request.user, 'is_superuser', False) or getattr(request.user, 'is_staff', False) or getattr(request.user, 'role', '') in ['admin', 'manager', 'staff']:
+        return redirect('reports:ims_dashboard')
+        
     orders = Order.objects.filter(user=request.user).order_by('-placed_at')[:5]
     total_orders = Order.objects.filter(user=request.user).count()
     active_orders = Order.objects.filter(user=request.user, status__in=['pending', 'processing', 'shipped']).count()
