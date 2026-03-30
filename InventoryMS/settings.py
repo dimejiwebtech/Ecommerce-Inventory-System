@@ -152,9 +152,7 @@ STORAGES = {
 }
 
 MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/" if AWS_STORAGE_BUCKET_NAME else '/media/'
-# If Supabase, we usually use the Public URL. 
-# But django-storages will generate it correctly once configured.
-# Let's use the standard S3 storage backend for compatibility.
+
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
