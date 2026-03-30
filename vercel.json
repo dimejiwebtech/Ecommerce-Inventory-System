@@ -1,11 +1,31 @@
 {
     "version": 2,
-    "functions": {
-        "InventoryMS/wsgi.py": {
-            "runtime": "@vercel/python"
+    "builds": [
+        {
+            "src": "InventoryMS/wsgi.py",
+            "use": "@vercel/python",
+            "config": {
+                "maxLambdaSize": "15mb",
+                "runtime": "python3.12"
+            }
+        },
+        {
+            "src": "build_files.sh",
+            "use": "@vercel/static-build",
+            "config": {
+                "distDir": "staticfiles"
+            }
         }
-    },
+    ],
     "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/staticfiles/$1"
+        },
+        {
+            "src": "/media/(.*)",
+            "dest": "/media/$1"
+        },
         {
             "src": "/(.*)",
             "dest": "InventoryMS/wsgi.py"
